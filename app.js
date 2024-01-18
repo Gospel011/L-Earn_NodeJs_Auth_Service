@@ -32,7 +32,7 @@ app.use('/api', limiter);
 
 
 app.get('/', (req, res, next) => {
-    res.status.json({
+    res.status(200).json({
         status: "success",
         message: "L-Earn is successfully running on server with keepAlive on"
     })
