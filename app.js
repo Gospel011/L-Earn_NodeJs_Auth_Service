@@ -31,6 +31,12 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 
+app.get('/', (req, res, next) => {
+    res.status.json({
+        status: "success",
+        message: "L-Earn is successfully running on server"
+    })
+})
 
 // SANITIZE DATA TO PREVENT NOSQL INJECTION ATTACKS
 app.use(mongoSanitize());
