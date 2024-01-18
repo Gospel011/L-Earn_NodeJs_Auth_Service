@@ -27,12 +27,12 @@ module.exports = (err, req, res, next) => {
       });
   }
 
-  //! REMOVE IN PRODUCTION
-  if(process.env.CURRENT_ENV == 'dev'){
+  
+  
       console.log('Error message 🔥📩🔥🧯🚒', err.message);
       console.log('Error stack 🔥📜📰', err.stack);
       console.log("Error 🔥🔥🔥", err)
-  }
+  
 
 
   next();
