@@ -2,9 +2,11 @@ const mongoose = require('mongoose');
 const app = require('./app.js');
 
 
+
+
 const DB = process.env.CURRENT_ENV == 'dev' ? process.env.LOCAL_DATABASE : process.env.DATABASE;
 
-console.log(`Database is ${DB}`);
+
 
 
 //? CONNECTING TO DATABASE
