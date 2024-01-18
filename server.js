@@ -8,15 +8,17 @@ process.on('uncaughtException', (err) => {
 });
 
 const axios = require('axios');
-axios.get('https://L-Earn.onrender.com').then(result => console.log(result.data)).catch(err => {
+axios.get('https://l-earn.onrender.com').then(result => console.log(result.data)).catch(err => {
   console.log('network error')
 })
+
+const app = require('./app.js');
 
 const keepAlive = ()=> {
 
   setTimeout(()=> {
     console.log("inside set timeout");
-    axios.get('https://L-Earn.onrender.com').then(result => console.log(result.data)).catch(err => {
+    axios.get('https://l-earn.onrender.com').then(result => console.log(result.data)).catch(err => {
       console.log('network error')
     })
     keepAlive();
@@ -27,7 +29,6 @@ const keepAlive = ()=> {
 keepAlive();
 
 const mongoose = require('mongoose');
-const app = require('./app.js');
 
 
 
