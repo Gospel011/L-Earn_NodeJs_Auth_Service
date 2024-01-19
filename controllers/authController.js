@@ -494,7 +494,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     }
      */
 
-    
+    if (req.file)
     console.log("F I L E N A M E IS " + req.file.filename);
     
     /// Get update fields from the request body
