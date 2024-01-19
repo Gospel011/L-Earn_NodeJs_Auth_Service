@@ -18,12 +18,12 @@ module.exports = (err, req, res, next) => {
   } else if (err["code"] == 11000) {
     res.status(err.statusCode || 500).json({
         status: 'fail',
-        message: 'This user already exists',
+        message: 'You already have an account. Please login with your email and password.',
       });
   } else {
     res.status(err.statusCode || 500).json({
         status: 'fail',
-        message: 'Something went wrong',
+        message: 'Something went wrong. Please contact us with a description of what you were doing before you saw this message.',
       });
   }
 
