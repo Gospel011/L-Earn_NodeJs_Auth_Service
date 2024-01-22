@@ -210,8 +210,8 @@ exports.sendMail = (subject) => {
       const passwordResetPath = `${__dirname}/../templates/passwordResetEmail.html`;
       const htmlContent =
         subject === 'L-Earn Password reset email'
-          ? await fs.readFile(emailVerificationPath, 'utf8')
-          : await fs.readFile(passwordResetPath, 'utf8');
+          ? await fs.readFile(passwordResetPath, 'utf8')
+          : await fs.readFile(emailVerificationPath, 'utf8');
       console.log({ htmlContent });
 
       //? Send email
