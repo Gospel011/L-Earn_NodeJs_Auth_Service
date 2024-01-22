@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: [validator.isEmail, 'please provide a valid email'],
     required: [true, 'please provide an email'],
-    unique: true,
+    unique: [true, "This user already exists"],
   },
 
   /**
