@@ -2,9 +2,13 @@ const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
 const jwt = require('jsonwebtoken');
+const fs = require('fs').promises;
 
 //! const bcrypt = require('bcryptjs');
-const sendEmail = require('../utils/sendEmail');
+const sendEmailDev = require('../utils/sendEmail');
+
+const { sendEmailProd } = require('./../utils/sendEmailProd');
+
 const crypto = require('crypto');
 const util = require('util');
 
@@ -193,18 +197,46 @@ exports.emailExists = asyncHandler(async (req, res, next) => {
  */
 
 //!...........................................................
-exports.sendMail = (subject, text) => {
+exports.sendMail = (subject) => {
+  //   L-Earn Password reset email
+  // Verify your L-Earn account
   return asyncHandler(async (req, res, next) => {
     console.log(' o t p in s e n d mail ' + req.otp);
+
+    //? SEND TRANSACTIONAL EMAIL
+    // C:\Users\user\FLUTTER_PROJECTS\L-EARN\L-Earn_NodeJs\templates\emailVerification.html
     if (req.otp != undefined) {
-      const newText = text.replace(/<<OTP>>/g, req.otp);
-      console.log({ newText });
+      const emailVerificationPath = `${__dirname}/../templates/emailVerification.html`;
+      const passwordResetPath = `${__dirname}/../templates/passwordResetEmail.html`;
+      const htmlContent =
+        subject === 'L-Earn Password reset email'
+          ? await fs.readFile(emailVerificationPath, 'utf8')
+          : await fs.readFile(passwordResetPath, 'utf8');
+      console.log({ htmlContent });
 
       //? Send email
-      await sendEmail(req.body.email, subject, newText);
+      if (process.env.CURRENT_ENV == 'dev') {
+        await sendEmailDev(req.body.email, subject, `your otp is ${req.otp}`);
+      } else {
+        const fullName = `${req.user.firstName} ${req.user.lastName}`;
+
+        await sendEmailProd(
+          [
+            { name: fullName, email: req.user.email }
+          ],
+          subject,
+          htmlContent,
+          {
+            to: req.user.firstName,
+            otp: req.otp,
+          },
+        );
+      }
+
+      //? SEND OTHER EMAIL
     } else {
-        //? Send email
-        await sendEmail(req.body.email, subject, text);
+      //? Send email
+      await sendEmail(req.body.email, subject, text);
     }
     res.status(200).json({
       status: 'success',
@@ -239,7 +271,7 @@ exports.generateOTP = asyncHandler(async (req, res, next) => {
     otp = await req.user.generateOTP('password');
   } else if (originalUrl === 'send-email-otp') {
     otp = await req.user.generateOTP('email');
-  } 
+  }
   console.log('G E N E R A T E D OTP = ' + otp);
   await req.user.save({ validateBeforeSave: false });
 
@@ -353,7 +385,7 @@ exports.verifyOtp = asyncHandler(async (req, res, next) => {
       emailOtp: hashedOTP,
       otpExpiryDate: { $gt: Date.now() },
     });
-  } 
+  }
 
   if (!user)
     return next(new AppError('This OTP is either invalid or has expired', 400));
@@ -384,7 +416,6 @@ exports.verifyOtp = asyncHandler(async (req, res, next) => {
   }
 */
 exports.isLoggedIn = asyncHandler(async (req, res, next) => {
-
   // VERIFY AUTH TOKEN
   // Confirm that the headers has an authorization field
   const { authorization } = req.headers;
@@ -449,16 +480,15 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   const changedPasswordAfterJwtWasIssued =
     user.changedPasswordAfterJwtWasIssued(verifiedPayload.iat);
 
-if (changedPasswordAfterJwtWasIssued == true) {
+  if (changedPasswordAfterJwtWasIssued == true) {
     return next(new AppError('Please login with your new password.'));
-}
-// Attach the user to the request object
-req.user = user;
+  }
+  // Attach the user to the request object
+  req.user = user;
 
-// GRANT ACCESS
-// console.log('USER ACCESSING THIS RESOURCE', req.user)
-next();
-
+  // GRANT ACCESS
+  // console.log('USER ACCESSING THIS RESOURCE', req.user)
+  next();
 });
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
@@ -494,28 +524,25 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     }
      */
 
-    if (req.file)
-    console.log("F I L E N A M E IS " + req.file.filename);
-    
-    /// Get update fields from the request body
-    const {
-        firstName,
-        lastName,
-        email,
-        gender,
-        school,
-        currentPassword,
-        newPassword,
-        newConfirmPassword,
-    } = req.body;
-    
-    // TODO -- Refactor this into it's own function
-    
-    const user = await User.findOne({ _id: req.user._id }).select('+password');
-    
+  if (req.file) console.log('F I L E N A M E IS ' + req.file.filename);
 
+  /// Get update fields from the request body
+  const {
+    firstName,
+    lastName,
+    email,
+    gender,
+    school,
+    currentPassword,
+    newPassword,
+    newConfirmPassword,
+  } = req.body;
 
-    let previousPublicId;
+  // TODO -- Refactor this into it's own function
+
+  const user = await User.findOne({ _id: req.user._id }).select('+password');
+
+  let previousPublicId;
   if (user.profilePicture != 'default.png') {
     previousPublicId = user.profilePicture
       .split('/')
@@ -523,11 +550,10 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
       .split('.')[0];
   }
 
-
-//* IMMEDIATELY SEND BACK THE CURRENT USER AND RETURN IF THE REQUEST BODY IS EMPTY
-console.log(`req.body is empty = ${util.inspect(Object.keys(req.body).length == 0)}`);
-
-
+  //* IMMEDIATELY SEND BACK THE CURRENT USER AND RETURN IF THE REQUEST BODY IS EMPTY
+  console.log(
+    `req.body is empty = ${util.inspect(Object.keys(req.body).length == 0)}`
+  );
 
   if (currentPassword) {
     // Verify the current password
@@ -551,13 +577,12 @@ console.log(`req.body is empty = ${util.inspect(Object.keys(req.body).length == 
 
     await user.save();
   } else {
-    console.log("IN E L S E " + req.file);
+    console.log('IN E L S E ' + req.file);
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     // user.email = email || user.email;
     user.gender = gender || user.gender;
     user.school = school || user.school;
-    
 
     if (req.file)
       user.profilePicture = req.file.filename || user.profilePicture;

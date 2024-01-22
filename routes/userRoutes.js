@@ -14,15 +14,13 @@ router.put('/signup', authController.signUp)
 router.post('/login', authController.login)
 
 //* FORGOT PASSWORD ROUTE
-router.post('/forgot-password', authController.emailExists, authController.generateOTP, authController.sendMail('L-Earn Password reset email',
-`Forgot your password? Use this one time password (OTP) to reset it.\nOTP: <<OTP>>`));
+router.post('/forgot-password', authController.emailExists, authController.generateOTP, authController.sendMail('L-Earn Password reset email'));
 
 //* RESET PASSWORD ROUTE
 router.patch('/reset-password', authController.verifyOtp, authController.resetPassword)
 
 //* SEND EMAIL OTP ROUTE
-router.post('/send-email-otp', authController.emailExists, authController.generateOTP, authController.sendMail('Verify your L-Earn account',
-`Welcome to L-Earn, your gateway to a world of learning, collaboration, and skill enhancement! We are thrilled to have you on board and look forward to embarking on this educational journey together. Use this one-time-password to verify your account.\nOTP: <<OTP>>`));
+router.post('/send-email-otp', authController.emailExists, authController.generateOTP, authController.sendMail('Verify your L-Earn account'));
 
 //* VERIFY EMAIL ROUTE
 router.post('/verify-email', authController.verifyOtp, authController.verifyEmail)

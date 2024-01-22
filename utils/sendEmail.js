@@ -25,7 +25,7 @@ module.exports = async (email, subject, text) => {
     },
   });
 
-  // Send the email alongside the mailOptions
+  // Send the email alongside the mailOptionse
 
   const mailOptions = {
     from: 'lodgemate@gmail.com',

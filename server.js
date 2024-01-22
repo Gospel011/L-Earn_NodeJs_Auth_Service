@@ -49,5 +49,5 @@ mongoose
 //! Start server
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
-  console.log(`L-Earn is running on port ${port}`);
+  console.log(`L-Earn is running on port ${port} and current environment is ${process.env.CURRENT_ENV == 'dev' ? 'development' : 'production'}`);
 });

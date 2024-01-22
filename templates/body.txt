@@ -1,0 +1,18 @@
+{
+	"sender": {
+		"name": "Extelvo Group",
+		"email": "extelvogroup@gmail.com"
+	},
+	"to": [
+		{
+			"name": "Ugochukwu Gospel",
+			"email": "ugochukwugospel001@gmail.com"
+		}
+	],
+	"subject": "Verify your L-Earn account",
+	"htmlContent": "",
+	"params": {
+		"to": "Gospel",
+		"otp": "915789"
+	}
+}
