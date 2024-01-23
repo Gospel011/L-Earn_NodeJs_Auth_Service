@@ -312,12 +312,12 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
  *
  * ### REQUEST BODY
  * @param newPassword: required
- * @param newPasswordConfirm: required
+ * @param newConfirmPassword: required
  * ### example
  *  {
  * "otp": "****"
  * "newPassword": "******"
- * "newPasswordConfirm": "******"
+ * "newConfirmPassword": "******"
  * }
  * ### RESPONSE
  * The response would look like this
@@ -329,11 +329,11 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 
 exports.resetPassword = asyncHandler(async (req, res, next) => {
   // Get the otp from the user and hash it
-  const { newPassword, newPasswordConfirm } = req.body;
+  const { newPassword, newConfirmPassword } = req.body;
 
   // If the user exist, reset his password
   req.user.password = newPassword;
-  req.user.confirmPassword = newPasswordConfirm;
+  req.user.confirmPassword = newConfirmPassword;
   req.user.otp = undefined;
   req.user.otpExpiryDate = undefined;
 
