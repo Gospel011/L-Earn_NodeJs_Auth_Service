@@ -215,9 +215,9 @@ exports.sendMail = (subject) => {
       console.log({ htmlContent });
 
       //? Send email
-      if (process.env.CURRENT_ENV == 'dev') {
-        await sendEmailDev(req.body.email, subject, `your otp is ${req.otp}`);
-      } else {
+      // if (process.env.CURRENT_ENV == 'dev') {
+      //   await sendEmailDev(req.body.email, subject, `your otp is ${req.otp}`);
+      // } else {
         const fullName = `${req.user.firstName} ${req.user.lastName}`;
 
         await sendEmailProd(
@@ -231,7 +231,7 @@ exports.sendMail = (subject) => {
             otp: req.otp,
           },
         );
-      }
+      // }
 
       //? SEND OTHER EMAIL
     } else {

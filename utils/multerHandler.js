@@ -11,6 +11,7 @@ const fileFilter = function (req, file, cb) {
   const permittedExtentions = ['png', 'jpg', 'jpeg', 'mp4', 'pdf'];
   const ext = file.mimetype.split('/')[1];
   console.log('EXTENSION', ext, file);
+  console.log(`PERMITED EXTENTIONS INCLUEDS ${ext}`, permittedExtentions.includes(ext));
 
   if (permittedExtentions.includes(ext)) cb(null, true);
   else cb(new AppError(`.${file.originalname.split('.')[1]} files are not allowed`));
