@@ -12,7 +12,7 @@ const fileFilter = function (req, file, cb) {
   const ext = file.mimetype.split('/')[1];
   console.log('EXTENSION', ext, file);
 
-  if (permittedExtentions.includes(ext)) cb(null, true);
+  if (permittedExtentions.includes(ext) ) return cb(null, true);
   else cb(new AppError(`.${file.originalname.split('.')[1]} files are not allowed`));
 };
 
