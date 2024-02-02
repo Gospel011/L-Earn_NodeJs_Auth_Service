@@ -3,6 +3,7 @@ const authController = require("./../controllers/authController")
 const multerHandler = require('./../utils/multerHandler')
 
 
+
 const router = express.Router()
 
 console.log("in user routes");
@@ -26,6 +27,6 @@ router.post('/send-email-otp', authController.emailExists, authController.genera
 router.post('/verify-email', authController.verifyOtp, authController.verifyEmail)
 
 // Update profile
-router.patch('/update-profile', authController.isLoggedIn, multerHandler.getProfilePicture, multerHandler.processAndUploadImageToCloud, authController.updateProfile)
+router.patch('/update-profile', authController.isLoggedIn, multerHandler.getProfilePicture, multerHandler.processAndUploadImageToCloud("profilePicture"), authController.updateProfile)
 
 module.exports = router

@@ -17,7 +17,7 @@ const articleSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: [true, 'Please provide the title of your video'],
+        required: [true, 'Please provide the title of your article'],
         trim: true
     },
     content: {
@@ -42,12 +42,12 @@ const articleSchema = new mongoose.Schema({
     
     dateCreated: {
         type: Date,
-        defualt: DateTime.now()
+        defualt: Date.now()
     }
 
 })
 
 
-const articleModel = mongoose.Schema('Article', articleSchema);
+const articleModel = mongoose.model('Article', articleSchema);
 
 module.exports = articleModel;

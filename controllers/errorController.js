@@ -9,21 +9,23 @@ module.exports = (err, req, res, next) => {
 
     //? SEND VALIDATION ERROR MESSAGES
   } else if (err.name == "ValidationError") {
-    res.status(err.statusCode || 500).json({
+    res.status(err.statusCode || 400).json({
         status: 'fail',
         message: err.errors[Object.keys(err.errors)[0]].message,
       });
 
-      //? SEND DUPLICATE ERROR MESSAGES
+      //? SEND DUPLICATE CREATION ERROR MESSAGES
   } else if (err["code"] == 11000) {
-    res.status(err.statusCode || 500).json({
+    res.status(err.statusCode || 400).json({
         status: 'fail',
         message: 'You already have an account. Please login with your email and password.',
       });
+      
   } else {
     res.status(err.statusCode || 500).json({
         status: 'fail',
         message: 'Something went wrong. Please contact us with a description of what you were doing before you saw this message.',
+        err
       });
   }
 

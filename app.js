@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const app = express();
 
-
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -29,15 +28,21 @@ const limiter = rateLimit({
   message: 'Too many requests. Please try again later',
 });
 
-app.use('/api', limiter);
+const tutorialPostLimiter = rateLimit({
+  max: 3,
+  windowMs: 24 * 1 * 60 * 60 * 1000,
+  message: "You've created too many tutorials today, please try again tommorow",
+});
 
+app.use('/api', limiter);
+// app.use('/api/tutorials', tutorialPostLimiter)
 
 app.get('/', (req, res, next) => {
-    res.status(200).json({
-        status: "success",
-        message: "L-Earn is successfully running on server with keepAlive on"
-    })
-})
+  res.status(200).json({
+    status: 'success',
+    message: 'L-Earn is successfully running on server with keepAlive on',
+  });
+});
 
 // SANITIZE DATA TO PREVENT NOSQL INJECTION ATTACKS
 app.use(mongoSanitize());
@@ -45,6 +50,7 @@ app.use(mongoSanitize());
 app.use('*', cors());
 
 const userRoutes = require('./routes/userRoutes');
+const contentRoutes = require('./routes/contentRoutes');
 
 //* This is the current api version
 const apiVersion = 'v1';
@@ -55,11 +61,9 @@ app.use(morgan('dev'));
 
 //* ROUTES
 app.use(`/api/${apiVersion}/user`, userRoutes);
-
+app.use(`/api/${apiVersion}/contents`, contentRoutes);
 
 // GLOBAL ERROR HANDLER
 app.use(globalErrorHandler);
 
-
-
-module.exports = app
+module.exports = app;
