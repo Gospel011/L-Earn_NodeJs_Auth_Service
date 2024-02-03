@@ -6,9 +6,9 @@ const articleSchema = new mongoose.Schema({
         ref: 'User',
         required: [true, "An article must have belong to a user"]
     },
-    tutorialId: {
+    contentId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'User',
+        ref: 'Content',
         required: [true, "An article must belong to a tutorial"]
     },
     chapterId: {
@@ -39,7 +39,8 @@ const articleSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Comment'
     }],
-    
+    tags: [String],
+        
     dateCreated: {
         type: Date,
         defualt: Date.now()

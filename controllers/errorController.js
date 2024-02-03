@@ -1,5 +1,7 @@
 module.exports = (err, req, res, next) => {
 
+  // console.log("In error block: ", err.message);
+
     //? SEND OPERATIONAL MESSAGES
   if (err.isOperational) {
     res.status(err.statusCode || 500).json({

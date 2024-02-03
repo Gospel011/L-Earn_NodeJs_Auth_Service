@@ -9,7 +9,7 @@ const ratingSchema = new mongoose.Schema({
 
     tutorialId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Tutorial',
+        ref: 'Content',
         required: [true, 'please provide the id of the tutorial this review belongs to.']
     },
 

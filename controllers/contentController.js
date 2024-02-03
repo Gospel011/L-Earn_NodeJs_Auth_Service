@@ -1,9 +1,10 @@
 const asyncHandler = require('../utils/asyncHandler');
 const Content = require('../models/contentModel');
-const Article = require('../models/articleModel');
+const QueryProcessor = require('../utils/queryProcessor');
 const AppError = require('../utils/appError');
 
 /**
+ * ? CREATE NEW CONTENT
  * This route creates a new Vidweo or Book, awaiting
  */
 exports.createNewContent = asyncHandler(async (req, res, next) => {
@@ -46,6 +47,7 @@ exports.createNewContent = asyncHandler(async (req, res, next) => {
   //? [CREATE] NEW TUTORIAL
   const newTutorial = await Content.create({
     type,
+    userId: req.user._id,
     title,
     description,
     thumbnailUrl,
@@ -61,9 +63,16 @@ exports.createNewContent = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * ? EDIT CONTENT
+ * This controller is used to edith the content the user posted.
+ */
 exports.editContent = asyncHandler(async (req, res, next) => {
   //* GET CONTENT ID FROM THE BODY
-  const { contentId, title, description, tags } = req.body;
+  const { title, description, tags } = req.body;
+
+  const contentId = req.params.id;
+  if (!contentId) throw new Error("Invalid contentId");
   console.log(`Content id is ${contentId}`);
 
   let price;
@@ -72,9 +81,9 @@ exports.editContent = asyncHandler(async (req, res, next) => {
     price = req.body.price * 1;
   }
 
-  if (!contentId) {
+  if (contentId == ':id') {
     return next(
-      new AppError('Please provide the id of the content you want to edit')
+      new AppError('Please provide the id of the content you want to edit', 400)
     );
   }
 
@@ -99,105 +108,46 @@ exports.editContent = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * ? GET CONTENT BY ID
+ * This controller retrieves one document by it's id. If no document is found,
+ * it returns a 404 error message
+ */
 exports.getContentById = asyncHandler(async (req, res, next) => {
   //* EXTRACT THE ID PATH VARIABLE
   const { id } = req.params;
 
-  let content;
+  
 
   console.log('Params: ', req.params);
 
-  console.log(`Finding by id: ${id}`);
 
-  content = await Content.findById(id);
+  const content = await Content.findById(id);
 
   if (!content) {
-    return new AppError('The requested content does not exist', 404);
+    console.log("In if block");
+    return next(new AppError('The requested content does not exist', 404));
   }
-
-  res.status(200).json({
+  
+  console.log(`Foundby id: ${id} ${!content}`);
+  return res.status(200).json({
     status: 'success',
     content,
   });
 });
 
+
 /**
- * @param {Object} query: this is the result of Model.find for example
- * @param {Object} queryObject: this is the object containing the clients query parameters
- * @param {Array} allowedFields: this is the array of allowed fields that'll be used to filter the query
+ * ? GET ALL CONTENT
+ * This controller is responsible for retriving all the contents in the database.
+ * If one or more query parameters is specified, it returns the documents that
+ * match the query.
  */
-class QueryProcessor {
-  constructor(query, queryObject, allowedFields) {
-    this.query = query;
-    this.queryObject = queryObject;
-    this.allowedFields = allowedFields;
-  }
-
-  filter() {
-    let parsedQueryObject = {};
-
-    // add $ in front of (gte|gt|lte|lt)
-
-    Object.keys(this.queryObject).forEach((el) => {
-      console.log('Current el: ', el);
-      console.log(this.allowedFields.includes(el));
-
-      if (this.allowedFields.includes(el)) {
-        console.log('In');
-
-        parsedQueryObject[el] = this.queryObject[el];
-      }
-    });
-
-    parsedQueryObject = JSON.parse(
-      JSON.stringify(parsedQueryObject).replace(
-        /\b(gte|gt|lte|lt)\b/g,
-        (match) => `$${match}`
-      )
-    );
-    console.log(this.queryObject, parsedQueryObject);
-
-    //* FILTER BY TYPE
-    this.query = Content.find(parsedQueryObject);
-    return this;
-  }
-
-  sort() {
-    let sort = '-averageRating -dateCreated';
-
-    //* SORT BY PRICE, DATE CREATED
-    if (this.queryObject.sort) {
-      sort = this.queryObject.sort.split(/,\s?/).join(' ');
-
-      console.log(`Sort string = ${sort}`);
-    }
-    this.query = this.query.sort(sort);
-    return this;
-  }
-
-  select() {
-    let fields = '-__v';
-
-    if (this.queryObject.fields) {
-      console.log('Fields in query object');
-      fields = this.queryObject.fields.split(', ').join(' ');
-    }
-    this.query = this.query.select(fields);
-    return this;
-  }
-
-  paginate() {
-    let page = this.queryObject.page * 1 || 1;
-    let limit = this.queryObject.limit * 1 || 20;
-    const skip = (page - 1) * limit;
-
-    this.query = this.query.skip(skip).limit(limit);
-    return this;
-  }
-}
-
 exports.getAllContent = asyncHandler(async (req, res, next) => {
-  const queryProcessor = new QueryProcessor(this.query, req.query, [
+
+  console.log("req.userContents: ", req.userContents);
+
+  const queryProcessor = new QueryProcessor(req.userContents || Content.find(), req.query, [
     'type',
     'price',
   ])
@@ -206,62 +156,7 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
     .select()
     .paginate();
 
-  // let parsedQueryObject = {};
-
-  // // add $ in front of (gte|gt|lte|lt)
-
-  // Object.keys(queryObject).forEach((el) => {
-  //   console.log('Current el: ', el);
-  //   console.log(allowedFields.includes(el));
-
-  //   if (allowedFields.includes(el)) {
-  //     console.log('In');
-  //     if (el == 'price') {
-  //       console.log(':::converting to int');
-  //       parsedQueryObject[el] = queryObject[el];
-  //     } else {
-  //       parsedQueryObject[el] = queryObject[el];
-  //     }
-  //   }
-  // });
-
-  // parsedQueryObject = JSON.parse(
-  //   JSON.stringify(parsedQueryObject).replace(
-  //     /\b(gte|gt|lte|lt)\b/g,
-  //     (match) => `$${match}`
-  //   )
-  // );
-  // console.log(queryObject, parsedQueryObject);
-
-  // //* FILTER BY TYPE
-  // let query = Content.find(parsedQueryObject);
-
-  // let sort = '-averageRating, -dateCreated';
-
-  // //* SORT BY PRICE, DATE CREATED
-  // if (req.query.sort) {
-  //   sort = req.query.sort.split(', ').join(' ');
-
-  //   console.log(`Sort string = ${sort}`);
-  // }
-  // query = query.sort(sort);
-
-  //* LIMIT FIELDS SENT BACK TO THE CLIENT
-
-  // let fields = '-__v';
-
-  // if (req.query.fields) {
-  //   fields = req.query.fields.split(', ').join(' ');
-  // }
-  // query = query.select(fields);
-
-  //* PAGINATE RESULTS
-  // let page = req.query.page * 1 || 1;
-  // let limit = req.query.limit * 1 || 2;
-  // const skip = (page - 1) * limit;
-
-  // query = query.skip(skip).limit(limit);
-
+  
   const contents = await queryProcessor.query;
 
   res.status(200).json({
@@ -270,3 +165,46 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
     contents,
   });
 });
+
+/**
+ * ? GET CONTENT BY ID
+ * This controller retrieves one document by it's id. If no document is found,
+ * it returns a 404 error message
+ */
+exports.deleteContentById = asyncHandler(async (req, res, next) => {
+  //* EXTRACT THE ID PATH VARIABLE
+  const { id } = req.params._id;
+
+  
+
+  console.log('Params: ', req.params);
+
+  console.log(`Finding by id: ${id}`);
+
+  const content = await Content.findOneAndDelete({_id: id, userId: req.user._id});
+
+  // TODO: DELETE THE VIDEOS OR ARTICLES IN THE CONTENT AS WELL.
+
+  if(!content) {
+    return next(new AppError("There is no such content", 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
+/**
+ * ? GET MY CONTENTS
+ * This route gets all the content having the current userId, then attaches it
+ * to the request object for the [getAllContents] controller to continue processing
+ */
+exports.getMyContents = asyncHandler(async (req, res, next) => {
+
+  req.userContents = Content.find({userId: req.user._id})
+
+  console.log("REQ. USER CONTENTS = ${req.userContents)")
+
+
+  next();
+})

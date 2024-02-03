@@ -24,7 +24,7 @@ const fileFilterDocs = function (req, file, cb) {
 };
 const fileFilterVideo = function (req, file, cb) {
   const permittedExtentions = ['mkv', 'mp4'];
-  console.log(":::: FILE MIME TYPE IS " + file.mimetype + " ::::::::");
+  console.log(':::: FILE MIME TYPE IS ' + file.mimetype + ' ::::::::');
   const ext = file.mimetype.split('/')[1];
   // console.log('EXTENSION', ext, file);
   // console.log(
@@ -82,6 +82,23 @@ const uploadImageFromBuffer = asyncHandler(async (req, cb) => {
     .end(req.file.buffer);
 });
 
+const uploadVideoFromBuffer = asyncHandler(async (req, cb) => {
+  const public_id = `user-${req.user._id}-${Math.round(
+    Math.random() * 1e9
+  )}-${Date.now()}`;
+  cloudinary.uploader
+    .upload_stream(
+      {
+        resource_type: 'video',
+        public_id: public_id,
+      },
+      (error, result) => {
+        cb(error, result);
+      }
+    )
+    .end(req.file.buffer);
+});
+
 const processAndUploadImageToCloud = (type) => {
   return asyncHandler(async (req, res, next) => {
     //?
@@ -91,39 +108,57 @@ const processAndUploadImageToCloud = (type) => {
 
     // console.log('IMAGE BUFFER', req.file.buffer);
 
-    if (type === "profilePicture") {
-    console.log("Processed image for 'profile picture'");
+    if (type === 'profilePicture') {
+      console.log("Processed image for 'profile picture'");
       await sharp(req.file.buffer)
         .resize(500, 500)
         .jpeg({ quality: 100 })
         .toFormat('jpeg');
-  
-    } else if (type === "thumbnail") {
-    console.log("Processed image for 'thumbnail'");
+    } else if (type === 'thumbnail') {
+      console.log("Processed image for 'thumbnail'");
       await sharp(req.file.buffer)
         .resize(1920, 1080)
         .jpeg({ quality: 100 })
         .toFormat('jpeg');
+    } else if (type === 'post') {
+      console.log("Processed image for 'post'");
+      await sharp(req.file.buffer).jpeg({ quality: 100 }).toFormat('jpeg');
     } else {
-    console.log("Processed image for 'image'");
-    await sharp(req.file.buffer)
-        .jpeg({ quality: 100 })
-        .toFormat('jpeg');
     }
     // console.log('CLOUDINARY UPLOAD FILE', req.file);
 
-    uploadImageFromBuffer(req, (error, result) => {
-      if (error) {
-        console.error(error);
-        return next(new AppError('Failed to upload image'));
-      } else {
-        console.log(result);
-        // console.log('SECURE URL FROM UPLOAD STREAM', result.secure_url);
-        req.file.filename = result.secure_url;
-        next();
-      }
-    });
+    if (type == 'video') {
+      uploadVideoFromBuffer(req, (error, result) => {
+        if (error) {
+          console.error(error);
+          return next(new AppError('Failed to upload image'));
+        } else {
+          console.log(result);
+          // console.log('SECURE URL FROM UPLOAD STREAM', result.secure_url);
+          req.file.filename = result.secure_url;
+          next();
+        }
+      });
+    } else {
+      uploadImageFromBuffer(req, (error, result) => {
+        if (error) {
+          console.error(error);
+          return next(new AppError('Failed to upload image'));
+        } else {
+          console.log(result);
+          // console.log('SECURE URL FROM UPLOAD STREAM', result.secure_url);
+          req.file.filename = result.secure_url;
+          next();
+        }
+      });
+    }
   });
 };
 
-module.exports = { getProfilePicture, processAndUploadImageToCloud, getThumbnail, getImage};
+module.exports = {
+  getProfilePicture,
+  processAndUploadImageToCloud,
+  getThumbnail,
+  getImage,
+  getVideo,
+};

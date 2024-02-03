@@ -6,10 +6,14 @@ const videoSchema = new mongoose.Schema({
         ref: 'User',
         required: [true, "A video must have belong to a user"]
     },
-    tutorialId: {
+    contentId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'User',
+        ref: 'Content',
         required: [true, "A video must belong to a tutorial"]
+    },
+    chapterId: {
+        type: Number,
+        required: [true, "please provide the chapterId of your tutorial"]
     },
     url: {
         type: String,
@@ -28,10 +32,6 @@ const videoSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Comment'
     }],
-    chapterId: {
-        type: Number,
-        required: [true, "please provide the chapterId of your tutorial"]
-    },
     
     tags: [
         String

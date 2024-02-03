@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const contentSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: [true, "Please specify who has this content"]
+  },
   type: {
     type: String,
     required: [true, 'Please provide the type of content you intend to create, video or book?'],
@@ -64,7 +69,7 @@ const contentSchema = new mongoose.Schema({
 });
 
 
-const contentModel = mongoose.model('Tutorial', contentSchema);
+const contentModel = mongoose.model('Content', contentSchema);
 
 module.exports = contentModel
 
