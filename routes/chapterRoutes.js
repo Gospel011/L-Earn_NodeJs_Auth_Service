@@ -13,6 +13,14 @@ router.route('/').put(
   multer.getVideo,
   multer.processAndUploadImageToCloud('video'),
   chapterController.createNewChapter
+)
+
+router.route('/:chapterId/chapter/:chapter')
+  .patch(
+  authController.isLoggedIn,
+  multer.getVideo,
+  multer.processAndUploadImageToCloud('video'),
+  chapterController.editChapter
 );
 
 module.exports = router;

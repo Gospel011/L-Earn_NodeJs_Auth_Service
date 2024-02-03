@@ -2,6 +2,9 @@ module.exports = (err, req, res, next) => {
 
   // console.log("In error block: ", err.message);
 
+  // TODO: DELETE RESOURCE FROM CLOUDINARY IF CONTENT CREATION FAILED
+  if(req.file) console.log('::::: FILENAME FROM ERROR CONTROLLER ::: ', req.file.filename);
+
     //? SEND OPERATIONAL MESSAGES
   if (err.isOperational) {
     res.status(err.statusCode || 500).json({

@@ -10,11 +10,7 @@ const storage = multer.memoryStorage();
 const fileFilterDocs = function (req, file, cb) {
   const permittedExtentions = ['png', 'jpg', 'jpeg', 'pdf'];
   const ext = file.mimetype.split('/')[1];
-  // console.log('EXTENSION', ext, file);
-  // console.log(
-  //   `PERMITED EXTENTIONS INCLUEDS ${ext}`,
-  //   permittedExtentions.includes(ext)
-  // );
+
 
   if (permittedExtentions.includes(ext)) return cb(null, true);
   else
@@ -22,15 +18,13 @@ const fileFilterDocs = function (req, file, cb) {
       new AppError(`.${file.originalname.split('.')[1]} files are not allowed`)
     );
 };
+
+
+
 const fileFilterVideo = function (req, file, cb) {
   const permittedExtentions = ['mkv', 'mp4'];
   console.log(':::: FILE MIME TYPE IS ' + file.mimetype + ' ::::::::');
   const ext = file.mimetype.split('/')[1];
-  // console.log('EXTENSION', ext, file);
-  // console.log(
-  //   `PERMITED EXTENTIONS INCLUEDS ${ext}`,
-  //   permittedExtentions.includes(ext)
-  // );
 
   if (permittedExtentions.includes(ext)) return cb(null, true);
   else
@@ -38,6 +32,8 @@ const fileFilterVideo = function (req, file, cb) {
       new AppError(`.${file.originalname.split('.')[1]} files are not allowed`)
     );
 };
+
+
 
 const uploadDocs = multer({
   storage,
@@ -49,6 +45,8 @@ const uploadDocs = multer({
     //parts: 7,
   },
 });
+
+
 const uploadVideo = multer({
   storage,
   fileFilterVideo,
@@ -100,6 +98,7 @@ const uploadVideoFromBuffer = asyncHandler(async (req, cb) => {
 });
 
 const processAndUploadImageToCloud = (type) => {
+
   return asyncHandler(async (req, res, next) => {
     //?
     // console.log('ORIGINAL REQ URL', req.originalUrl);
@@ -123,22 +122,26 @@ const processAndUploadImageToCloud = (type) => {
     } else if (type === 'post') {
       console.log("Processed image for 'post'");
       await sharp(req.file.buffer).jpeg({ quality: 100 }).toFormat('jpeg');
-    } else {
     }
-    // console.log('CLOUDINARY UPLOAD FILE', req.file);
 
-    if (type == 'video') {
+    console.log('CLOUDINARY UPLOAD FILE', req.file);
+
+    //* HANDOLE VIDEO UPLOAD TO CLOUDINARY
+    if (type == "video") {
       uploadVideoFromBuffer(req, (error, result) => {
+        console.log("Uploading from buffer");
         if (error) {
           console.error(error);
-          return next(new AppError('Failed to upload image'));
+          return next(new AppError('Failed to upload video'));
         } else {
-          console.log(result);
+          console.log("result", result);
           // console.log('SECURE URL FROM UPLOAD STREAM', result.secure_url);
           req.file.filename = result.secure_url;
           next();
         }
       });
+
+      //* HANDOLE IMAGE UPLOAD TO CLOUDINARY
     } else {
       uploadImageFromBuffer(req, (error, result) => {
         if (error) {

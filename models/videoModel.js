@@ -11,9 +11,9 @@ const videoSchema = new mongoose.Schema({
         ref: 'Content',
         required: [true, "A video must belong to a tutorial"]
     },
-    chapterId: {
+    chapter: {
         type: Number,
-        required: [true, "please provide the chapterId of your tutorial"]
+        required: [true, "please provide the chapter of your tutorial"]
     },
     url: {
         type: String,
@@ -21,7 +21,7 @@ const videoSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: ['true', 'Please provide the title of your video'],
+        required: [true, 'Please provide the title of your video'],
         trim: true
     },
     description: {
@@ -39,7 +39,7 @@ const videoSchema = new mongoose.Schema({
     
     dateCreated: {
         type: Date,
-        defualt: DateTime.now()
+        defualt: Date.now()
     }
 
 })
