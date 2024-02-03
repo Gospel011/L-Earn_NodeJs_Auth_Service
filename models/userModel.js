@@ -56,6 +56,29 @@ const userSchema = new mongoose.Schema({
     },
     default: false,
   },
+  /**
+     * ## IS VERIFIED
+     * @param {Boolean} isVerified This is a tag that shows if the user is verified or not
+     */
+    //! New
+  isVerified: {
+    type: Boolean,
+    enum: {
+      values: [true, false],
+      message: 'is verified can only be true or false',
+    },
+    default: false,
+  },
+
+  /**
+     * ## FOLLOWERS
+     * @param {Boolean} followers This is a tag that shows the number of followers a user has
+     */
+    //! New
+  followers: {
+    type: Number,
+    default: 0,
+  },
 
   /**
      * ## PROFILE PICTURE
@@ -128,6 +151,16 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
 
+  //! New
+  department: {
+    type: String
+  },
+
+  //! New
+  level: {
+    type: Number
+  },
+
   //* ROLE
   role: {
     type: String,
@@ -146,6 +179,12 @@ const userSchema = new mongoose.Schema({
   lastChangedPassword: {
     type: Date,
     select: false,
+  },
+
+  //! New
+  deleted: {
+    type: Boolean,
+    default: false
   },
 
   //* EMAIL OTP
