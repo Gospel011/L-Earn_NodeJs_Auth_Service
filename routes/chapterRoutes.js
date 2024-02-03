@@ -9,29 +9,25 @@ const router = express.Router({ mergeParams: true });
 
 // router.use('/:contentId/chapters', ChapterRouter)
 
+router.use('*', authController.isLoggedIn)
 
 router
   .route('/')
   .put(
-    authController.isLoggedIn,
     multer.getVideo,
     multer.processAndUploadImageToCloud('video'),
     chapterController.createNewChapter
   )
   .get(
-    authController.isLoggedIn,
     chapterController.getChapters);
 
 router
   .route('/:chapterId')
   .patch(
-    authController.isLoggedIn,
     chapterController.editChapter
   ).get(
-    authController.isLoggedIn,
     chapterController.getChapterById
   ).delete(
-    authController.isLoggedIn,
     chapterController.deleteChapterById
   );
 

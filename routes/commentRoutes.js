@@ -1,6 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/authController');
-const reviewController = require('../controllers/reviewController');
+const commentController = require('../controllers/commentController');
 
 const router = express.Router({ mergeParams: true });
 
@@ -9,9 +9,9 @@ router.use('*', authController.isLoggedIn);
 
 router
   .route('/')
-  .post(reviewController.addNewReview)
-  .get(reviewController.getAllReviews)
-  .patch(reviewController.editReview)
-  .delete(reviewController.deleteReview);
+  .post(commentController.addComment)
+  .get(commentController.getAllComments)
+  .patch(commentController.editComment)
+//   .delete(commentController.deleteReview);
 
 module.exports = router;

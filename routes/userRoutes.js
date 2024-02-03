@@ -1,32 +1,54 @@
-const express = require("express")
-const authController = require("./../controllers/authController")
-const multerHandler = require('./../utils/multerHandler')
+const express = require('express');
+const authController = require('./../controllers/authController');
+const multerHandler = require('./../utils/multerHandler');
 
+const router = express.Router();
 
-
-const router = express.Router()
-
-console.log("in user routes");
+console.log('in user routes');
 
 //* SIGNUP ROUTE
-router.put('/signup', authController.signUp)
+router.put('/signup', authController.signUp);
 
 //* LOGIN ROUTE
-router.post('/login', authController.login)
+router.post('/login', authController.login);
 
 //* FORGOT PASSWORD ROUTE
-router.post('/forgot-password', authController.emailExists, authController.generateOTP, authController.sendMail('L-Earn Password reset email'));
+router.post(
+  '/forgot-password',
+  authController.emailExists,
+  authController.generateOTP,
+  authController.sendMail('L-Earn Password reset email')
+);
 
 //* RESET PASSWORD ROUTE
-router.patch('/reset-password', authController.verifyOtp, authController.resetPassword)
+router.patch(
+  '/reset-password',
+  authController.verifyOtp,
+  authController.resetPassword
+);
 
 //* SEND EMAIL OTP ROUTE
-router.post('/send-email-otp', authController.emailExists, authController.generateOTP, authController.sendMail('Verify your L-Earn account'));
+router.post(
+  '/send-email-otp',
+  authController.emailExists,
+  authController.generateOTP,
+  authController.sendMail('Verify your L-Earn account')
+);
 
 //* VERIFY EMAIL ROUTE
-router.post('/verify-email', authController.verifyOtp, authController.verifyEmail)
+router.post(
+  '/verify-email',
+  authController.verifyOtp,
+  authController.verifyEmail
+);
 
 // Update profile
-router.patch('/update-profile', authController.isLoggedIn, multerHandler.getProfilePicture, multerHandler.processAndUploadImageToCloud("profilePicture"), authController.updateProfile)
+router.patch(
+  '/update-profile',
+  authController.isLoggedIn,
+  multerHandler.getProfilePicture,
+  multerHandler.processAndUploadImageToCloud('profilePicture'),
+  authController.updateProfile
+);
 
-module.exports = router
+module.exports = router;

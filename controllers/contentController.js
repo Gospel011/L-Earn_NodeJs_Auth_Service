@@ -172,11 +172,13 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
  */
 exports.deleteContentById = asyncHandler(async (req, res, next) => {
   //* EXTRACT THE ID PATH VARIABLE
-  const { id } = req.params._id;
+  
+  console.log('Params: ', req.params);
+  const { id } = req.params;
+
 
   
 
-  console.log('Params: ', req.params);
 
   console.log(`Finding by id: ${id}`);
 

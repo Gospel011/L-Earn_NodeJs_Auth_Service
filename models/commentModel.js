@@ -16,8 +16,12 @@ const commentSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'Video',
     },
-
+    
     // TODO: add a postId here
+    postId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Post',
+    },
 
     replies: [
         {type: mongoose.Schema.ObjectId, ref: 'Reply'}
@@ -29,20 +33,16 @@ const commentSchema = new mongoose.Schema({
 
     comment: {
         type: String,
-        required: [true, 'Please provide your comment'],
+        required: [true, 'Your comment cannot be empty'],
         trim: true,
         validate: {
             validator: function (value) {
-              if (this.isNew || this.isModified('comment')) {
-                return value.length === 1;
-              } else {
-                return true;
-              }
+              return value.length > 0;
             },
             message: 'your comment cannot be empty',
           },
     },
-    createdAt: {
+    dateCreated: {
         type: Date,
         default: Date.now()
     }
