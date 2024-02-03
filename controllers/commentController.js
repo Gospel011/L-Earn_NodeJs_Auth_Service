@@ -110,56 +110,47 @@ exports.editComment = asyncHandler(async (req, res, next) => {
 
   const { comment } = req.body;
   const userId = req.user._id;
-  const { chapterId, postId } = req.params;
+  const { commentId } = req.params;
   const { type } = req.query;
-  let newComment;
 
-  if (!type) return next(new AppError('Please specify a valid type', 400));
+  const newComment = await Comment.findOneAndUpdate(
+    {
+      userId,
+      _id: commentId,
+    },
+    { comment },
+    { runValidators: true, returnDocument: 'after' }
+  );
 
-  
-
-  switch (type.toLowerCase()) {
-    case 'book':
-
-      newComment = await Comment.findOne(
-        {
-          userId,
-          articleId: chapterId,
-        },
-        { comment },
-        { runValidators: true, returnDocument: 'after' }
-      );
-
-      break;
-    case 'video':
-      
-    newComment = await Comment.findOne(
-      {
-        userId,
-        videoId: chapterId,
-      },
-      { comment },
-      { runValidators: true, returnDocument: 'after' }
-    );
-
-      break;
-    case 'post':
-      newComment = await Comment.findOne(
-        {
-          userId,
-          postId
-        },
-        { comment },
-        { runValidators: true, returnDocument: 'after' }
-      );
-      break;
-    default:
-      return next(new AppError('Please specify a valid type')); //!__
-  }
+  if (!newComment) return next(new AppError('The requested comment does not exit', 404));
 
   res.status(200).json({
     status: 'success',
     newComment,
+  });
+});
+
+exports.deleteComment = asyncHandler(async (req, res, next) => {
+  console.log(req.params);
+
+  const { comment } = req.body;
+  const userId = req.user._id;
+  const { commentId } = req.params;
+  const { type } = req.query;
+
+  const newComment = await Comment.findOneAndDelete(
+    {
+      userId,
+      _id: commentId,
+    },
+    { comment },
+    { runValidators: true, returnDocument: 'after' }
+  );
+
+  if (!newComment) return next(new AppError('The requested comment does not exit', 404));
+
+  res.status(200).json({
+    status: 'success',
   });
 });
 

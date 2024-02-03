@@ -6,12 +6,14 @@ const router = express.Router({ mergeParams: true });
 
 router.use('*', authController.isLoggedIn);
 
-
 router
   .route('/')
   .post(commentController.addComment)
-  .get(commentController.getAllComments)
+  .get(commentController.getAllComments);
+
+router
+  .route('/:commentId')
   .patch(commentController.editComment)
-//   .delete(commentController.deleteReview);
+  .delete(commentController.deleteComment);
 
 module.exports = router;
