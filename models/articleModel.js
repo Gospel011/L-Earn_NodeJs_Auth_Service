@@ -6,6 +6,11 @@ const articleSchema = new mongoose.Schema({
         ref: 'User',
         required: [true, "An article must have belong to a user"]
     },
+    contentId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Content',
+        required: [true, "A book chapter must belong to a book"]
+    },
     content: {
         type: mongoose.Schema.ObjectId,
         ref: 'Content',

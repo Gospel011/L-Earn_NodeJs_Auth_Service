@@ -9,7 +9,7 @@ const videoSchema = new mongoose.Schema({
     contentId: {
         type: mongoose.Schema.ObjectId,
         ref: 'Content',
-        required: [true, "A video must belong to a tutorial"]
+        required: [true, "A video chapter must belong to a tutorial"]
     },
     chapter: {
         type: Number,

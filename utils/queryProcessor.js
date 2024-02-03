@@ -4,7 +4,7 @@
  * @param {Array} allowedFields: this is the array of allowed fields that'll be used to filter the query
  */
 class QueryProcessor {
-  constructor(query, queryObject, allowedFields) {
+  constructor(query, queryObject, allowedFields = ['type', 'price' ]) {
     this.query = query;
     this.queryObject = queryObject;
     this.allowedFields = allowedFields;

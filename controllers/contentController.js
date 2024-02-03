@@ -96,11 +96,13 @@ exports.editContent = asyncHandler(async (req, res, next) => {
     console.log('::: F I LNAME IS ' + filename);
   }
 
-  const targetContent = await Content.findByIdAndUpdate(
-    contentId,
+  const targetContent = await Content.findOneAndUpdate(
+    {_id: contentId, userId: req.user._id},
     { title, description, tags, price, thumbnailUrl: filename },
     { runValidators: true, returnDocument: 'after' }
   );
+
+  if (!targetContent) return next(new AppError("You do not have such content", 404))
 
   res.status(200).json({
     status: 'success',
@@ -147,10 +149,7 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
 
   console.log("req.userContents: ", req.userContents);
 
-  const queryProcessor = new QueryProcessor(req.userContents || Content.find(), req.query, [
-    'type',
-    'price',
-  ])
+  const queryProcessor = new QueryProcessor(req.userContents || Content.find(), req.query)
     .filter()
     .sort()
     .select()

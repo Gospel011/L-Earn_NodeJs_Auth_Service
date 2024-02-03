@@ -3,6 +3,7 @@ const Article = require('../models/articleModel');
 const Video = require('../models/videoModel');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/appError');
+const QueryProcessor = require('../utils/queryProcessor');
 
 exports.createNewChapter = asyncHandler(async (req, res, next) => {
   console.log(`Request baseUrl: ${req.baseUrl}`, req.params);
@@ -76,34 +77,123 @@ exports.createNewChapter = asyncHandler(async (req, res, next) => {
 });
 
 exports.editChapter = asyncHandler(async (req, res, next) => {
-  const { contentId, chapterId, chapter } = req.params;
+  const { contentId, chapterId } = req.params;
   const { type } = req.query;
 
-  let title, content, tags;
-  let description, url;
-  let editedBook;
+  const { title, tags } = req.body; //* both book and video
+  const { content } = req.body; //* only book
+  const { description } = req.body; //* only video
+
+  let editedChapter;
 
   if (type.toLowerCase() == 'book') {
-    //TODO: HANDLE BOOK EDIT
-    editedBook = await Article.findByIdAndUpdate(
-      chapterId,
+    //* HANDLE BOOK EDIT
+    editedChapter = await Article.findOneAndUpdate(
+      { contentId, _id: chapterId },
       { title, content, tags },
       { runValidators: true, returnDocument: 'after' }
     );
 
-    if (!editedBook) return next(new AppError("That chapter does not exist", 404));
+    console.log({ chapterId, contentId });
 
-    res.status(200).json({
-      status: "success",
-      editedBook
-    })
+    console.log({ title, content, tags });
+
+    if (!editedChapter)
+      return next(new AppError('That chapter does not exist', 404));
   } else if (type.toLowerCase() == 'video') {
-    // TODO: HANDLE VIDEO EDIT
+    // * HANDLE VIDEO EDIT
+    editedChapter = await Video.findOneAndUpdate(
+      { contentId, _id: chapterId },
+      {
+        title,
+        description,
+        tags,
+      },
+      { runValidators: true, returnDocument: 'after' }
+    );
   }
 
-  //? Get the current article corresponding to the chapterId
-  res.status(200).send({
+  //? SEND RESPONSE BACK TO CLIENT
+  res.status(200).json({
     status: 'success',
-    message: 'still in development',
+    editedChapter,
   });
 });
+
+exports.getChapters = asyncHandler(async (req, res, next) => {
+  console.log(req.params, req.query);
+  // { contentId: '65bd5b7bbd98230b6b4b0a6a' } { type: 'book' }
+  const { contentId } = req.params;
+  const { type } = req.query;
+
+  let chapters;
+
+  if (type == 'book') {
+    chapters = Article.find({ contentId });
+
+    // res.send({chapters})
+  } else {
+    chapters = Video.find({ contentId });
+    console.log('Found video');
+  }
+
+  const queryProcessor = new QueryProcessor(chapters, req.query, [])
+    .sort()
+    .select()
+    .paginate();
+
+  chapters = await queryProcessor.query;
+
+  res.status(200).json({
+    status: 'success',
+    chapters,
+  });
+});
+
+exports.getChapterById = asyncHandler(async (req, res, next) => {
+  // {{baseUrl}}/contents/:contentId/chapters/:chapterId?type=video
+
+  const { type } = req.query;
+  const { contentId, chapterId } = req.params;
+  let chapterQuery;
+
+  if (type == 'book') {
+    chapterQuery = Article.findOne({ contentId, _id: chapterId });
+  } else {
+    chapterQuery = Video.findOne({ contentId, _id: chapterId });
+  }
+
+  chapterQuery = new QueryProcessor(chapterQuery, req.query).select();
+
+  const chapter = await chapterQuery.query;
+
+  if (!chapter) return next(new AppError('That chapter does not exist', 404));
+
+  res.status(200).json({
+    status: 'success',
+    chapter,
+  });
+});
+
+
+exports.deleteChapterById = asyncHandler(async (req, res, next) => {
+  // {{baseUrl}}/contents/:contentId/chapters/:chapterId?type=video
+
+  const { type } = req.query;
+  const { contentId, chapterId } = req.params;
+  let chapter;
+
+  if (type == 'book') {
+    chapter = await Article.deleteOne({ contentId, _id: chapterId });
+  } else {
+    chapter = await Video.deleteOne({ contentId, _id: chapterId });
+  }
+
+  if (chapter.deletedCount == 0) return next(new AppError('That chapter does not exist', 404));
+
+  
+  res.status(200).json({
+    status: 'success',
+  });
+});
+
