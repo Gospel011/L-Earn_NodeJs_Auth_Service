@@ -2,6 +2,7 @@ const express = require('express');
 const authController = require('../controllers/authController');
 const chapterController = require('../controllers/chapterController');
 const multer = require('../utils/multerHandler');
+const HelperMiddlewares = require('../utils/helper_middlewares');
 
 const router = express.Router({ mergeParams: true });
 
@@ -28,7 +29,9 @@ router
   ).get(
     chapterController.getChapterById
   ).delete(
-    chapterController.deleteChapterById
+    chapterController.deleteChapterById,
+    HelperMiddlewares.updateIds,
+    HelperMiddlewares.updateChapters
   );
 
 module.exports = router;

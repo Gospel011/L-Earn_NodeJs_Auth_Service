@@ -126,6 +126,10 @@ exports.getChapters = asyncHandler(async (req, res, next) => {
   const { contentId } = req.params;
   const { type } = req.query;
 
+  if (!contentId) return next(new AppError('Please specify the contentId')); //!__
+
+  console.log(req.params);
+
   let chapters;
 
   if (type == 'book') {
@@ -157,6 +161,8 @@ exports.getChapterById = asyncHandler(async (req, res, next) => {
   const { contentId, chapterId } = req.params;
   let chapterQuery;
 
+  console.log(req.params);
+
   if (type == 'book') {
     chapterQuery = Article.findOne({ contentId, _id: chapterId });
   } else {
@@ -175,25 +181,42 @@ exports.getChapterById = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 exports.deleteChapterById = asyncHandler(async (req, res, next) => {
   // {{baseUrl}}/contents/:contentId/chapters/:chapterId?type=video
+
+  //* contentQuery, targetField, idToDelete
 
   const { type } = req.query;
   const { contentId, chapterId } = req.params;
   let chapter;
+  let targetField;
 
   if (type == 'book') {
     chapter = await Article.deleteOne({ contentId, _id: chapterId });
-  } else {
+
+    targetField = 'articles';
+    req.model = Article;
+  } else if (type == 'video') {
+
     chapter = await Video.deleteOne({ contentId, _id: chapterId });
+    targetField = 'videos';
+    req.model = Video;
   }
 
-  if (chapter.deletedCount == 0) return next(new AppError('That chapter does not exist', 404));
+  if (chapter.deletedCount == 0)
+    return next(new AppError('That chapter does not exist', 404));
 
-  
+  const contentQuery = Content.findOne({ _id: contentId });
+  const idToDelete = chapterId;
+
+  req.contentQuery = contentQuery;
+  req.targetField = targetField;
+  req.idToDelete = idToDelete;
+
   res.status(200).json({
     status: 'success',
   });
+
+  next();
 });
 

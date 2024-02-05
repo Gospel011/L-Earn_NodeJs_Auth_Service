@@ -135,8 +135,10 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
 
   const { comment } = req.body;
   const userId = req.user._id;
-  const { commentId } = req.params;
+  const { commentId, contentId, chapterId } = req.params;
   const { type } = req.query;
+
+  if (!type) return next(new AppError("Please specify the type of content you want to delete this comment for")) //!_
 
   const newComment = await Comment.findOneAndDelete(
     {
@@ -152,48 +154,62 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
   });
+
+  console.log("type is video", type.toLowerCase() == 'video')
+  
+  if (type.toLowerCase() == 'video') {
+    req.contentQuery = Video.findOne({_id: chapterId, contentId});
+    req.model = Video;
+
+    console.log("Would delete comment in video model");
+
+  } else if ( type.toLowerCase() == 'book'){
+    req.contentQuery = Article.findOne({_id: chapterId, contentId});
+    req.model = Article;
+    
+  } else if( type.toLowerCase() == 'post') {
+    req.contentQuery = Post.findOne({_id: chapterId, contentId});
+    req.model = Post;
+    
+  } else {
+    return next( new AppError("Invalid type", 400));
+  }
+  
+  //* contentQuery, targetField, idToDelete
+  req.targetField = 'comments';
+  req.idToDelete = commentId;
+
+  next();  
 });
 
-// exports.editReview = asyncHandler(async (req, res, next) => {
-//   console.log(req.params);
-//   const { review, rating } = req.body;
-//   const userId = req.user._id;
-//   const { contentId } = req.params;
 
-//   const newReview = await Review.findOneAndUpdate(
-//     {
-//       userId,
-//       contentId,
-//     },
-//     { review, rating },
-//     { runValidators: true, returnDocument: 'after' }
-//   );
 
-//   res.status(200).json({
-//     status: 'success',
-//     newReview,
-//   });
-// });
+exports.likeComment = asyncHandler(async (req, res, next) => {
 
-// exports.deleteReview = asyncHandler(async (req, res, next) => {
+  const {commentId} = req.params;
 
-//   const userId = req.user._id;
-//   const { contentId } = req.params;
+  if(!commentId) return next(new AppError("Couldn't like comment"));
 
-//   const result = await Review.findOneAndDelete(
-//     {
-//       userId,
-//       contentId,
-//     },
-//   );
+  const targetComment = await Comment.findOne({_id: commentId});
+  targetComment.like();
 
-// //   console.log({result})
-//   if (!result) {
-//     console.log(result)
-//     return next(new AppError("The required review deos not exist", 404));
-//   }
+  res.status(200).json({
+    status: "success"
+  })
 
-//   res.status(200).json({
-//     status: 'success',
-//   });
-// });
+})
+
+exports.unlikeComment = asyncHandler(async (req, res, next) => {
+
+  const {commentId} = req.params;
+
+  if(!commentId) return next(new AppError("Couldn't like comment"));
+
+  const targetComment = await Comment.findOne({_id: commentId});
+  targetComment.unlike();
+
+  res.status(200).json({
+    status: "success"
+  })
+
+})

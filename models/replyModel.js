@@ -7,29 +7,26 @@ const replySchema = new mongoose.Schema({
         required: [true, 'please provide the id of the user who wrote this comment']
     },
 
-    commetId: {
+    commentId: {
         type: mongoose.Schema.ObjectId,
         ref: 'Comment',
         required: [true, 'please provide the id of the comment you intend to reply']
     },
 
     likes: {
-      type: Number
+      type: Number,
+      default: 0
     },
 
     reply: {
         type: String,
-        required: [true, 'Please provide your comment'],
+        required: [true, 'Please write what\'s on your mind, your reply cannot be empty'],
         trim: true,
         validate: {
             validator: function (value) {
-              if (this.isNew || this.isModified('comment')) {
-                return value.length >= 1;
-              } else {
-                return false;
-              }
+              return value.length >= 1;
             },
-            message: 'your comment cannot be empty',
+            message: 'your reply cannot be empty',
           },
     },
     createdAt: {
@@ -37,6 +34,22 @@ const replySchema = new mongoose.Schema({
         default: Date.now()
     }
 });
+
+replySchema.methods.like = function() {
+  console.log("::: LIKING :::")
+  this.likes += 1
+
+  // console.log(`New likes = ${this.likes}`)
+  this.save();
+}
+
+replySchema.methods.unlike = function() {
+  console.log("::: UNLIKING :::")
+  this.likes -= 1
+
+  if(this.likes < 0) return;
+  this.save();
+}
 
 const replyModel = mongoose.model('Reply', replySchema);
 

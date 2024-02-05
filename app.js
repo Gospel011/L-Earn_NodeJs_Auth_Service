@@ -51,6 +51,7 @@ app.use('*', cors());
 
 const userRoutes = require('./routes/userRoutes');
 const contentRoutes = require('./routes/contentRoutes');
+const postRoutes = require('./routes/postRoutes.js');
 
 //* This is the current api version
 const apiVersion = 'v1';
@@ -62,6 +63,7 @@ app.use(morgan('dev'));
 //* ROUTES
 app.use(`/api/${apiVersion}/user`, userRoutes);
 app.use(`/api/${apiVersion}/contents`, contentRoutes);
+app.use(`/api/${apiVersion}/posts`, postRoutes);
 
 // GLOBAL ERROR HANDLER
 app.use(globalErrorHandler);

@@ -9,9 +9,9 @@ router.use('*', authController.isLoggedIn);
 
 router
   .route('/')
-  .post(reviewController.addNewReview)
+  .post(reviewController.addNewReview, reviewController.updateContentReviewCount)
   .get(reviewController.getAllReviews)
-  .patch(reviewController.editReview)
-  .delete(reviewController.deleteReview);
+  .patch(reviewController.editReview, reviewController.updateContentReviewCount)
+  .delete(reviewController.deleteReview, reviewController.updateContentReviewCount);
 
 module.exports = router;

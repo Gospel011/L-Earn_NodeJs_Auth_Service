@@ -29,12 +29,8 @@ const reviewSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Please provide a rating for your review'],
         default: 1,
-        validate: {
-            validator: function(value) {
-                return value > 0;
-            },
-            message: "Your rating cannot be less than 1"
-        }
+        max: [5, "Your rating can only be between 1 and 5"],
+        min: [1, "Your rating can only be between 1 and 5"]
     },
 
     likes: {

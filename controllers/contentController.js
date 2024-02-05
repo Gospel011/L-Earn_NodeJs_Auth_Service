@@ -2,6 +2,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const Content = require('../models/contentModel');
 const QueryProcessor = require('../utils/queryProcessor');
 const AppError = require('../utils/appError');
+const util = require('util');
 
 /**
  * ? CREATE NEW CONTENT
@@ -9,7 +10,10 @@ const AppError = require('../utils/appError');
  */
 exports.createNewContent = asyncHandler(async (req, res, next) => {
   //* GET TUTORIAL TITLE AND DESCRIPTION FROM BODY
-  const { title, description, type, tags } = req.body;
+  const { title, description, tags } = req.body;
+  const { type } = req.query;
+  console.log(`::: C O N T E N T  Q U E R Y IS ${util.inspect(req.query)}`);
+
   let { price } = req.body;
 
   //* GET THUMBNAIL URL FROM REQ.FILE.FILENAME
