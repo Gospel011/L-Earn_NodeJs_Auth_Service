@@ -119,7 +119,7 @@ const processAndUploadImageToCloud = (type) => {
         .resize(1920, 1080)
         .jpeg({ quality: 100 })
         .toFormat('jpeg');
-    } else if (type === 'post') {
+    } else if (type === 'image') {
       console.log("Processed image for 'post'");
       await sharp(req.file.buffer).jpeg({ quality: 100 }).toFormat('jpeg');
     }

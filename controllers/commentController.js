@@ -51,17 +51,20 @@ exports.addComment = asyncHandler(async (req, res, next) => {
       await targetChapter.save();
       break;
     case 'post':
-      targetChapter = await Post.findById(chapterId);
-      if (!targetChapter)
+      targetPost = await Post.findById(postId);
+      if (!targetPost)
         return next(new AppError('This post no longer exists'));
+      console.log(req.body);
+
       newComment = await Comment.create({
         userId,
         postId: postId,
         comment,
       });
 
-      targetChapter.comments.push(newComment._id);
-      await targetChapter.save();
+
+      targetPost.comments.push(newComment._id);
+      await targetPost.save();
       break;
     default:
       return next(new AppError('Please specify a valid type')); //!__
@@ -76,7 +79,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
 exports.getAllComments = asyncHandler(async (req, res, next) => {
   console.log(req.params);
 
-  const { chapterId } = req.params;
+  const { chapterId, postId } = req.params;
   const { type } = req.query;
 
   let commentsQuery;
@@ -86,7 +89,7 @@ exports.getAllComments = asyncHandler(async (req, res, next) => {
   } else if (type.toLowerCase() == 'video') {
     commentsQuery = Comment.find({ videoId: chapterId });
   } else if (type.toLowerCase() == 'post') {
-    commentsQuery = Comment.find({ articleId: chapterId });
+    commentsQuery = Comment.find({ postId });
   } else {
     return next(new AppError('Please provide a valid type.'));
   }
@@ -191,6 +194,8 @@ exports.likeComment = asyncHandler(async (req, res, next) => {
   if(!commentId) return next(new AppError("Couldn't like comment"));
 
   const targetComment = await Comment.findOne({_id: commentId});
+  
+  if(!targetComment) return next(new AppError("This comment does not exis", 404));
   targetComment.like();
 
   res.status(200).json({

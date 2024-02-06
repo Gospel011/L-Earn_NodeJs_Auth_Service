@@ -4,7 +4,7 @@
  * @param {Array} allowedFields: this is the array of allowed fields that'll be used to filter the query
  */
 class QueryProcessor {
-  constructor(query, queryObject, allowedFields = ['type', 'price' ]) {
+  constructor(query, queryObject, allowedFields = ['type', 'price']) {
     this.query = query;
     this.queryObject = queryObject;
     this.allowedFields = allowedFields;
@@ -28,10 +28,20 @@ class QueryProcessor {
 
     parsedQueryObject = JSON.parse(
       JSON.stringify(parsedQueryObject).replace(
-        /\b(gte|gt|lte|lt)\b/g,
+        /\b(gte|gt|lte|lt|in)\b/g,
         (match) => `$${match}`
       )
     );
+
+    // { sort: '-dateCreated', tags: { in: 'resumption' } } { tags: { '$in': 'resumption' } }
+    let tagsArray;
+    if (parsedQueryObject.tags) {
+      if (parsedQueryObject.tags['$in']) {
+        tagsArray = parsedQueryObject['tags']['$in'].split(', ');
+        parsedQueryObject['tags']['$in'] = tagsArray.map((el) => `#${el}`);
+      }
+    }
+
     console.log(this.queryObject, parsedQueryObject);
 
     //* FILTER BY TYPE

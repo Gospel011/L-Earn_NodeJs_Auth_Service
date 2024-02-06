@@ -218,19 +218,17 @@ exports.sendMail = (subject) => {
       // if (process.env.CURRENT_ENV == 'dev') {
       //   await sendEmailDev(req.body.email, subject, `your otp is ${req.otp}`);
       // } else {
-        const fullName = `${req.user.firstName} ${req.user.lastName}`;
+      const fullName = `${req.user.firstName} ${req.user.lastName}`;
 
-        await sendEmailProd(
-          [
-            { name: fullName, email: req.user.email }
-          ],
-          subject,
-          htmlContent,
-          {
-            to: req.user.firstName,
-            otp: req.otp,
-          },
-        );
+      await sendEmailProd(
+        [{ name: fullName, email: req.user.email }],
+        subject,
+        htmlContent,
+        {
+          to: req.user.firstName,
+          otp: req.otp,
+        }
+      );
       // }
 
       //? SEND OTHER EMAIL
@@ -596,3 +594,15 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     user,
   });
 });
+
+exports.isEmailVerified = (req, res, next) => {
+  console.log(`Is email verified = ${req.user.emailVerified}`);
+  if (req.user.emailVerified) {
+    console.log("Your email is verified");
+    next();
+  } else {
+    return next(
+      new AppError('Please verify your email to continue', 401)
+    );
+  }
+};

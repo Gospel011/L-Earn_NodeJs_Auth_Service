@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
   //* userId --> ObjectId, ref "User"
   //* text --> required
-  //* picture --> optional
+  //* image --> optional
   //* poll --> optional
   //* like --> not user controlled, default 0
   //* comment --> ObjectId, ref "Comment"
@@ -18,39 +18,61 @@ const postSchema = new mongoose.Schema({
     required: [true, 'A comment must be written by a user'],
   },
 
-  //? PICTURE
-  picture: {
+  //? TEXT
+  text: {
     type: String,
     required: [true, 'Your post cannot be empty'],
     trim: true,
-  },
-  poll: {
-    type: [{
-      option: {
-        type: String,
-        trim: true
-      },
-      votes: {
-        type: Number,
-        default: 0
-      },
-      voters: [{
-        type: mongoose.Schema.ObjectId,
-        ref: 'User'
-      }]
-    }],
     validate: {
-      validator: function(value) {
-        value.length <= 6
+      validator: function (value) {
+        return value.length > 1;
       },
-      message: 'You can only have a maximum of 6 options in a poll'
-    }
+      message: 'Your post cannot be empty',
+    },
+  },
+
+  //? PICTURE
+  image: {
+    type: String,
+  },
+
+  //? POLL
+  poll: {
+    type: [
+      {
+        option: {
+          type: String,
+          trim: true,
+          required: [true, 'Your option cannot be empty'],
+        },
+        votes: {
+          type: Number,
+          default: 0,
+        },
+        voters: [
+          {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+          },
+        ],
+      },
+    ],
+    validate: {
+      validator: function (value) {
+        if (Array.isArray(value) && value.length > 0) {
+          return value.length >= 2 && value.length <= 6;
+        }
+        return true;
+      },
+      message:
+        'A poll can only have a minimum of two options and a maximum of six',
+    },
   },
 
   //? LIKE
-  like: {
+  likes: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
   //? COMMENTS
@@ -63,7 +85,7 @@ const postSchema = new mongoose.Schema({
   //? SHARES
   shares: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
   //? TAGS
@@ -74,12 +96,49 @@ const postSchema = new mongoose.Schema({
   //? DATECREATED
   dateCreated: {
     type: Date,
-    default: Date.now()
-  }
-
-
+    default: Date.now(),
+  },
 });
 
+postSchema.methods.like = function() {
+  this.likes += 1;
+  this.save();
+}
+
+postSchema.methods.unlike = function() {
+  this.likes -= 1;
+  if(this.likes < 0) return;
+  this.save();
+}
+
+postSchema.methods.vote = async function (userId, optionId) {
+
+  this.poll.map((option) => {
+    
+    if (option.voters.includes(userId)) {
+      // delte previous vote
+      const index = option.voters.indexOf(userId);
+      option.voters.splice(index, 1);
+      option.votes -= 1;
+      return option; //returns
+    }
+    
+    // look through all options, anyone that has the optionId, add the userId into the voters list and increase the votes by 1
+
+    if (option._id == optionId) {
+      console.log('::::: voting ::::::');
+      console.log(`option is ${option}`);
+
+      option.voters.push(userId);
+      option.votes += 1;
+      return option;
+    } else {
+      return option;
+    }
+  });
+
+  await this.save();
+};
 
 const postModel = mongoose.model('Post', postSchema);
 
