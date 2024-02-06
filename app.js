@@ -46,12 +46,14 @@ app.get('/', (req, res, next) => {
 
 // SANITIZE DATA TO PREVENT NOSQL INJECTION ATTACKS
 app.use(mongoSanitize());
-// ALLOW CROSS ORIGIN RESOURCE SHARING
+
+// DISALLOW CROSS ORIGIN RESOURCE SHARING
 app.use('*', cors());
 
 const userRoutes = require('./routes/userRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const postRoutes = require('./routes/postRoutes.js');
+const webhookRoutes = require('./routes/webhook.js');
 
 //* This is the current api version
 const apiVersion = 'v1';
@@ -64,6 +66,7 @@ app.use(morgan('dev'));
 app.use(`/api/${apiVersion}/user`, userRoutes);
 app.use(`/api/${apiVersion}/contents`, contentRoutes);
 app.use(`/api/${apiVersion}/posts`, postRoutes);
+app.use(`/api/${apiVersion}/mnfy-webhook`, webhookRoutes);
 
 // GLOBAL ERROR HANDLER
 app.use(globalErrorHandler);
