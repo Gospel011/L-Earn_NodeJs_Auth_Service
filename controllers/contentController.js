@@ -51,7 +51,7 @@ exports.createNewContent = asyncHandler(async (req, res, next) => {
   //? [CREATE] NEW TUTORIAL
   const newTutorial = await Content.create({
     type,
-    userId: req.user._id,
+    authorId: req.user._id,
     title,
     description,
     thumbnailUrl,
@@ -101,7 +101,7 @@ exports.editContent = asyncHandler(async (req, res, next) => {
   }
 
   const targetContent = await Content.findOneAndUpdate(
-    {_id: contentId, userId: req.user._id},
+    {_id: contentId, authorId: req.user._id},
     { title, description, tags, price, thumbnailUrl: filename },
     { runValidators: true, returnDocument: 'after' }
   );
@@ -186,7 +186,7 @@ exports.deleteContentById = asyncHandler(async (req, res, next) => {
 
   console.log(`Finding by id: ${id}`);
 
-  const content = await Content.findOneAndDelete({_id: id, userId: req.user._id});
+  const content = await Content.findOneAndDelete({_id: id, authorId: req.user._id});
 
   // TODO: DELETE THE VIDEOS OR ARTICLES IN THE CONTENT AS WELL.
 
@@ -201,12 +201,12 @@ exports.deleteContentById = asyncHandler(async (req, res, next) => {
 
 /**
  * ? GET MY CONTENTS
- * This route gets all the content having the current userId, then attaches it
+ * This route gets all the content having the current authorId, then attaches it
  * to the request object for the [getAllContents] controller to continue processing
  */
 exports.getMyContents = asyncHandler(async (req, res, next) => {
 
-  req.userContents = Content.find({userId: req.user._id})
+  req.userContents = Content.find({authorId: req.user._id})
 
   console.log("REQ. USER CONTENTS = ${req.userContents)")
 

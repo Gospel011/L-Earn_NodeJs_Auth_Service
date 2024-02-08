@@ -1,13 +1,13 @@
 const express = require('express')
 const authController = require('../controllers/authController');
-const paymentController = require('../controllers/paymentController');
+const webhookController = require('../controllers/webhookController');
 
 const router = express.Router();
 
-router.route('/successful-collection').post(paymentController.registerPayment);
-router.route('/refund-completion').post(paymentController.registerPayment);
-router.route('/disbursement').post(paymentController.registerPayment);
-router.route('/settlement').post(paymentController.registerPayment);
+router.route('/successful-collection').post(webhookController.registerPayment);
+router.route('/refund-completion').post(webhookController.registerPayment);
+router.route('/disbursement').post(webhookController.registerPayment);
+router.route('/settlement').post(webhookController.registerPayment);
 
 
 

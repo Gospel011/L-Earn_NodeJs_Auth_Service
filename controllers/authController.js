@@ -3,6 +3,7 @@ const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
 const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
+const QueryProcessor = require('../utils/queryProcessor')
 
 //! const bcrypt = require('bcryptjs');
 const sendEmailDev = require('../utils/sendEmail');
@@ -534,6 +535,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     currentPassword,
     newPassword,
     newConfirmPassword,
+    handle
   } = req.body;
 
   // TODO -- Refactor this into it's own function
@@ -564,6 +566,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
+    user.handle = handle || user.handle;
     // user.email = email || user.email;
     user.gender = gender || user.gender;
     user.school = school || user.school;
@@ -578,6 +581,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     console.log('IN E L S E ' + req.file);
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
+    user.handle = handle || user.handle;
     // user.email = email || user.email;
     user.gender = gender || user.gender;
     user.school = school || user.school;
@@ -605,4 +609,18 @@ exports.isEmailVerified = (req, res, next) => {
       new AppError('Please verify your email to continue', 401)
     );
   }
-};
+}
+
+
+exports.getUser = asyncHandler(async(req, res, next) => {
+  const { id } = req.params
+  if(!id) return next(new AppError("Please select a valid user id to continue"));
+  const user = await new QueryProcessor(User.findById(id), req.query).select().query;
+
+  if (!user) return next(new AppError("The required user does not exist", 404));
+
+  res.status(200).json({
+    status: "success",
+    user
+  })
+})

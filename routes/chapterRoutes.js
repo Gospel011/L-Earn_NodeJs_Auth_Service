@@ -1,6 +1,8 @@
 const express = require('express');
 const authController = require('../controllers/authController');
+const paymentController = require('../controllers/paymentController');
 const chapterController = require('../controllers/chapterController');
+
 const multer = require('../utils/multerHandler');
 const HelperMiddlewares = require('../utils/helper_middlewares');
 
@@ -10,7 +12,7 @@ const router = express.Router({ mergeParams: true });
 
 // router.use('/:contentId/chapters', ChapterRouter)
 
-router.use('*', authController.isLoggedIn)
+router.use('*', authController.isLoggedIn);
 
 router
   .route('/')
@@ -19,16 +21,13 @@ router
     multer.processAndUploadImageToCloud('video'),
     chapterController.createNewChapter
   )
-  .get(
-    chapterController.getChapters);
+  .get(chapterController.getChapters);
 
 router
   .route('/:chapterId')
-  .patch(
-    chapterController.editChapter
-  ).get(
-    chapterController.getChapterById
-  ).delete(
+  .patch(chapterController.editChapter)
+  .get(paymentController.confirmPayment, chapterController.getChapterById)
+  .delete(
     chapterController.deleteChapterById,
     HelperMiddlewares.updateIds,
     HelperMiddlewares.updateChapters

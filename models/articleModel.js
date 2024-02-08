@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
-    userId: {
+    authorId: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, "An article must have belong to a user"]

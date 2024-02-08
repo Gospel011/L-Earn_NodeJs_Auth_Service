@@ -34,7 +34,7 @@ module.exports = async (email, subject, text) => {
     text: text,//`Forgot your password? Use this one time password (OTP) to reset it.\nOTP: ${otp}`,
   };
 
-  console.log("M a i l o p t i o n s " + mailOptions);
+  // console.log("M a i l o p t i o n s " + mailOptions);
 
   console.log("sending email to user's email");
   await transporter.sendMail(mailOptions);

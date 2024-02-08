@@ -6,6 +6,8 @@ const router = express.Router();
 
 console.log('in user routes');
 
+router.get('/:id', authController.isLoggedIn, authController.getUser)
+
 //* SIGNUP ROUTE
 router.put('/signup', authController.signUp);
 

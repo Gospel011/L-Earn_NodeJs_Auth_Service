@@ -19,7 +19,13 @@ const userSchema = new mongoose.Schema({
 
   handle: {
     type: String,
-    unique: [true, "This handle has already been chosen"]
+    unique: [true, "This handle has already been chosen"],
+    validate: {
+      validator: function(value) {
+        return value.length >= 2;
+      },
+      message: "Your handle cannot be empty"
+    }
   },
 
   /**
@@ -184,7 +190,14 @@ const userSchema = new mongoose.Schema({
   //! New
   deleted: {
     type: Boolean,
-    default: false
+    default: false,
+    select: false
+  },
+
+  monthlyProfit: {
+    type: Number,
+    default: 0,
+    select: false
   },
 
   //* EMAIL OTP
@@ -248,6 +261,19 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.checkPassword = async function (clientPassword, dbPassword) {
   return await bcrypt.compare(clientPassword, dbPassword);
 };
+
+/**
+ * This schema method calculates the percentage income of the creator and adds it to their earnings
+ */
+userSchema.methods.addIncomePercentage = function(income) {
+  if(!income) return;
+  const percentageIncome = 0.55 * income;
+  this.monthlyProfit += percentageIncome;
+  this.monthlyProfit = this.monthlyProfit.toFixed(1);
+
+  console.log("ADDING INCOME", percentageIncome, this.monthlyProfit);
+  this.save();
+}
 
 /**
  * 

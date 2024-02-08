@@ -54,6 +54,7 @@ const userRoutes = require('./routes/userRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const postRoutes = require('./routes/postRoutes.js');
 const webhookRoutes = require('./routes/webhook.js');
+const paymentRoutes = require('./routes/paymentRoutes.js');
 
 //* This is the current api version
 const apiVersion = 'v1';
@@ -66,7 +67,8 @@ app.use(morgan('dev'));
 app.use(`/api/${apiVersion}/user`, userRoutes);
 app.use(`/api/${apiVersion}/contents`, contentRoutes);
 app.use(`/api/${apiVersion}/posts`, postRoutes);
-app.use(`/api/${apiVersion}/mnfy-webhook`, webhookRoutes);
+app.use(`/webhooks/${apiVersion}/mnfy-webhook`, webhookRoutes);
+app.use(`/api/${apiVersion}/payment`, paymentRoutes);
 
 // GLOBAL ERROR HANDLER
 app.use(globalErrorHandler);

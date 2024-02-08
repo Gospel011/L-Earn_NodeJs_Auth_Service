@@ -3,6 +3,7 @@ const authController = require('../controllers/authController');
 const contentController = require('../controllers/contentController');
 const multerHandler = require('../utils/multerHandler');
 const ChapterRouter = require('./chapterRoutes');
+const PaymentRouter = require('./paymentRoutes');
 const ReviewRouter = require('./reviewRoutes.js');
 const CommentRouter = require('./commentRoutes.js');
 
@@ -11,6 +12,7 @@ const router = express.Router();
 // {{baseUrl}}/contents/:id/chapters
 // {{baseUrl}}/contents/:id/reviews
 
+router.use('/stats', PaymentRouter)
 router.use('/:contentId/chapters', ChapterRouter)
 router.use('/:contentId/reviews', ReviewRouter)
 router.use('/:contentId/chapters/:chapterId/comments', CommentRouter)

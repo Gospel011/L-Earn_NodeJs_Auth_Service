@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const contentSchema = new mongoose.Schema({
-  userId: {
+  authorId: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
     required: [true, "Please specify who has this content"]
@@ -44,7 +44,7 @@ const contentSchema = new mongoose.Schema({
     default: 0,
     validate: {
       validator: function(value) {
-        return value <= 2000;
+        return value <= 3000;
       },
       message: "You may only set a price of \u20A62,000 max"
     }

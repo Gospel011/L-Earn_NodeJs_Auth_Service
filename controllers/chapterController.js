@@ -14,7 +14,7 @@ exports.createNewChapter = asyncHandler(async (req, res, next) => {
 
   const userId = req.user._id;
   const targetContent = await Content.findOne({
-    userId: userId,
+    authorId: userId,
     _id: contentId,
   });
 
@@ -34,7 +34,7 @@ exports.createNewChapter = asyncHandler(async (req, res, next) => {
       title,
       content,
       chapter,
-      userId,
+      authorId: userId,
       contentId,
       tags,
     });
@@ -57,7 +57,7 @@ exports.createNewChapter = asyncHandler(async (req, res, next) => {
     console.log(`Filename is ${url}`);
 
     newChapter = await Video.create({
-      userId,
+      authorId: userId,
       contentId,
       chapter,
       title,
@@ -141,9 +141,8 @@ exports.getChapters = asyncHandler(async (req, res, next) => {
     console.log('Found video');
   }
 
-  const queryProcessor = new QueryProcessor(chapters, req.query, [])
+  const queryProcessor = new QueryProcessor(chapters.select('title chapter type'), req.query, [])
     .sort()
-    .select()
     .paginate();
 
   chapters = await queryProcessor.query;

@@ -199,7 +199,8 @@ exports.likeComment = asyncHandler(async (req, res, next) => {
   targetComment.like();
 
   res.status(200).json({
-    status: "success"
+    status: "success",
+    likes: targetComment.likes
   })
 
 })
@@ -214,7 +215,8 @@ exports.unlikeComment = asyncHandler(async (req, res, next) => {
   targetComment.unlike();
 
   res.status(200).json({
-    status: "success"
+    status: "success",
+    likes: targetComment.likes
   })
 
 })

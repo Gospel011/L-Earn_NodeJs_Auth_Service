@@ -21,16 +21,22 @@ module.exports = (err, req, res, next) => {
 
       //? SEND DUPLICATE CREATION ERROR MESSAGES
   } else if (err["code"] == 11000) {
+    const keyValues = Object.keys(err.keyValue);
     res.status(err.statusCode || 400).json({
         status: 'fail',
-        message: 'You already have an account. Please login with your email and password.',
+        message: keyValues[0] == "handle" ? "This handle has already been chosen" : 'You already have an account. Please login with your email and password.'
       });
       
-  } else {
+  } else if (err.statusCode == 503) {
+    res.status(err.statusCode).json({
+      status: 'fail',
+      message: 'Your request couldn\'t be completed, please try again after a few minutes'
+    })
+  }
+  else {
     res.status(err.statusCode || 500).json({
         status: 'fail',
         message: 'Something went wrong. Please contact us with a description of what you were doing before you saw this message.',
-        err
       });
   }
 
@@ -39,6 +45,7 @@ module.exports = (err, req, res, next) => {
       console.log('Error message 🔥📩🔥🧯🚒', err.message);
       console.log('Error stack 🔥📜📰', err.stack);
       console.log("Error 🔥🔥🔥", err)
+      console.log("STATUS CODE 🔥🔥🔥", err.stausCode)
   
 
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const videoSchema = new mongoose.Schema({
-    userId: {
+    authorId: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: [true, "A video must have belong to a user"]
