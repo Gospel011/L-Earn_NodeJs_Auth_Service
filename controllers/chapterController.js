@@ -6,7 +6,9 @@ const AppError = require('../utils/appError');
 const QueryProcessor = require('../utils/queryProcessor');
 
 exports.createNewChapter = asyncHandler(async (req, res, next) => {
-  console.log(`Request baseUrl: ${req.baseUrl}`, req.params);
+  console.log(`Request baseUrl: ${req.baseUrl}`, req.params, {
+    authorId: req.user._id,
+  });
 
   const contentId = req.params.contentId;
   if (!contentId)
@@ -69,6 +71,12 @@ exports.createNewChapter = asyncHandler(async (req, res, next) => {
     targetContent.videos.push(newChapter._id);
     await targetContent.save();
   }
+
+  if (req.user.role != 'tutor') {
+    req.user.role = 'tutor';
+    req.user.save();
+  }
+  
 
   res.status(201).json({
     status: 'success',
@@ -141,7 +149,11 @@ exports.getChapters = asyncHandler(async (req, res, next) => {
     console.log('Found video');
   }
 
-  const queryProcessor = new QueryProcessor(chapters.select('title chapter type'), req.query, [])
+  const queryProcessor = new QueryProcessor(
+    chapters.select('title chapter type'),
+    req.query,
+    []
+  )
     .sort()
     .paginate();
 
@@ -196,7 +208,6 @@ exports.deleteChapterById = asyncHandler(async (req, res, next) => {
     targetField = 'articles';
     req.model = Article;
   } else if (type == 'video') {
-
     chapter = await Video.deleteOne({ contentId, _id: chapterId });
     targetField = 'videos';
     req.model = Video;
@@ -218,4 +229,3 @@ exports.deleteChapterById = asyncHandler(async (req, res, next) => {
 
   next();
 });
-

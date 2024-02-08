@@ -52,7 +52,7 @@ const uploadVideo = multer({
   fileFilterVideo,
   limits: {
     files: 1,
-    fileSize: 10 * 1024 * 1024,
+    fileSize: 300 * 1024 * 1024,
     fields: 10,
     //parts: 7,
   },

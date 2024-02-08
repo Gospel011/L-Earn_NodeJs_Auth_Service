@@ -1,6 +1,7 @@
 const asyncHandler = require('../utils/asyncHandler');
 const Content = require('../models/contentModel');
 const QueryProcessor = require('../utils/queryProcessor');
+const CourseInvoice = require('../models/courseInvoiceModel')
 const AppError = require('../utils/appError');
 const util = require('util');
 
@@ -13,6 +14,7 @@ exports.createNewContent = asyncHandler(async (req, res, next) => {
   const { title, description, tags } = req.body;
   const { type } = req.query;
   console.log(`::: C O N T E N T  Q U E R Y IS ${util.inspect(req.query)}`);
+
 
   let { price } = req.body;
 
@@ -60,6 +62,7 @@ exports.createNewContent = asyncHandler(async (req, res, next) => {
   });
 
   console.log('Tutorial created');
+  
 
   res.status(201).json({
     status: 'success',
@@ -209,6 +212,37 @@ exports.getMyContents = asyncHandler(async (req, res, next) => {
   req.userContents = Content.find({authorId: req.user._id})
 
   console.log("REQ. USER CONTENTS = ${req.userContents)")
+
+
+  next();
+})
+/**
+ * ? GET MY PURCHASED CONTENTS
+ * This route gets all the content having the current authorId, then attaches it
+ * to the request object for the [getAllContents] controller to continue processing
+ */
+exports.getMyPurchasedContents = asyncHandler(async (req, res, next) => {
+
+  // req.userContents = Content.find({authorId: req.user._id})
+
+  // console.log("REQ. USER CONTENTS = ${req.userContents)")
+  const aggregatedContents = await CourseInvoice.aggregate([
+    {
+      $match: {userId: {$eq: req.user._id}}
+    }
+    // {
+    //   $project: {
+    //     contentId: '',
+    //     _id: 0
+    //   }
+    // }
+  ])
+
+  const contents = aggregatedContents.map(el => el.contentId)
+
+  req.userContents = Content.find({_id: {$in: contents}});
+
+  // res.status(200).json({userContents})
 
 
   next();

@@ -46,4 +46,9 @@ router
       contentController.getAllContent
     )
 
+    router.route('/info/me/purchases').get(
+      contentController.getMyPurchasedContents,
+      contentController.getAllContent
+    )
+
 module.exports = router;

@@ -171,7 +171,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ['user', 'admin'],
+      values: ['user', 'admin', 'tutor'],
       message: 'The only available roles are user and admin',
     },
     default: 'user',
