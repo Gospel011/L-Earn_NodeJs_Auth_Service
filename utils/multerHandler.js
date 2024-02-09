@@ -64,14 +64,14 @@ const getImage = uploadDocs.single('image'); //? FOR POST
 const getVideo = uploadVideo.single('video'); //? FOR POST
 
 const uploadImageFromBuffer = asyncHandler(async (req, cb) => {
-  const public_id = `user-${req.user._id}-${Math.round(
+  const public_id = `user-${req.user._id.toString().slice(-6)}-${Math.round(
     Math.random() * 1e9
   )}-${Date.now()}`;
   cloudinary.uploader
     .upload_stream(
       {
         resource_type: 'image',
-        public_id: public_id,
+        public_id: `learn/users/${public_id}`,
       },
       (error, result) => {
         cb(error, result);
@@ -81,14 +81,14 @@ const uploadImageFromBuffer = asyncHandler(async (req, cb) => {
 });
 
 const uploadVideoFromBuffer = asyncHandler(async (req, cb) => {
-  const public_id = `user-${req.user._id}-${Math.round(
+  const public_id = `user-${req.user._id.toString().slice(-6)}-${Math.round(
     Math.random() * 1e9
   )}-${Date.now()}`;
   cloudinary.uploader
     .upload_stream(
       {
         resource_type: 'video',
-        public_id: public_id,
+        public_id: `learn/videos/${public_id}`,
       },
       (error, result) => {
         cb(error, result);

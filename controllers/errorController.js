@@ -3,7 +3,13 @@ module.exports = (err, req, res, next) => {
   // console.log("In error block: ", err.message);
 
   // TODO: DELETE RESOURCE FROM CLOUDINARY IF CONTENT CREATION FAILED
-  if(req.file) console.log('::::: FILENAME FROM ERROR CONTROLLER ::: ', req.file.filename);
+  if(req.file) {
+    console.log('::::: FILENAME FROM ERROR CONTROLLER ::: ', req.file.filename);
+  //   cloudinary.v2.api
+  // .delete_resources(['learn/videosuser-ffb316-393139124-1707443401817'], 
+  //   { type: 'upload', resource_type: 'video' })
+  // .then(console.log);
+  }
 
     //? SEND OPERATIONAL MESSAGES
   if (err.isOperational) {

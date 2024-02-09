@@ -95,6 +95,16 @@ const userSchema = new mongoose.Schema({
     default: 'default.png',
   },
 
+  //! New
+  /**
+     * ## PROFILE PICTURE
+     * @param {String} banner this is the banner that'll be displayed in the user's profile page
+     */
+  banner: {
+    type: String,
+    default: 'default.png',
+  },
+
   /**
      * ## PASSWORD
      * @param {String} password is the user's password
