@@ -107,7 +107,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 
   const posts = await queryProcessor.query.populate({
     path: 'userId',
-    select: 'firstName lastName profilePicture handle',
+    select: 'firstName lastName profilePicture handle gender',
   });
 
   return res.status(200).json({

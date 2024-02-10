@@ -29,7 +29,7 @@ const replySchema = new mongoose.Schema({
             message: 'your reply cannot be empty',
           },
     },
-    createdAt: {
+    dateCreated: {
         type: Date,
         default: Date.now()
     }
