@@ -107,7 +107,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
 
   const posts = await queryProcessor.query.populate({
     path: 'userId',
-    select: 'firstName lastName profilePicture handle gender role',
+    select: 'firstName lastName profilePicture handle isVerified gender role',
   });
 
   return res.status(200).json({
