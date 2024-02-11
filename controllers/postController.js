@@ -2,6 +2,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const QueryProcessor = require('../utils/queryProcessor');
 const AppError = require('../utils/appError');
 const Post = require('../models/postModel');
+const util = require('util')
 
 exports.createPost = asyncHandler(async (req, res, next) => {
   const { addon } = req.query; //* addon specifies which other field apart from text the user wants to add to their post
@@ -48,14 +49,32 @@ exports.createPost = asyncHandler(async (req, res, next) => {
       userId,
       text,
       tags,
-    });
+    })
   }
 
   if (!newPost) return next(new AppError('An Error Occured'));
 
+  // select: 'firstName lastName profilePicture handle isVerified gender role',
+  const userDetails = {
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    profilePicture: req.user.profilePicture,
+    handle: req.user.handle,
+    isVerified: req.user.isVerified,
+    gender: req.user.gender,
+    role: req.user.role,
+    _id: userId
+  }
+
+  const post = {...newPost}
+  post._doc.userId = userDetails
+
+  console.log(`New updated post is ${post._doc}`);
+  console.log(`New updated post is ${util.inspect(userDetails)}`);
+
   res.status(200).json({
     status: 'success',
-    newPost,
+    post: post._doc
   });
 });
 
@@ -110,6 +129,8 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
     select: 'firstName lastName profilePicture handle isVerified gender role',
   });
 
+  //! WORK ON LIKES BEFORE SENDING TO CLIENT
+
   return res.status(200).json({
     status: 'success',
     results: posts.length,
@@ -124,10 +145,11 @@ exports.likePost = asyncHandler(async (req, res, next) => {
 
   if (!targetPost) return next(new AppError('This post does not exist', 404));
 
-  targetPost.like();
+  const likes = await targetPost.like(req.user._id);
 
   return res.status(200).json({
     status: 'success',
+    likes
   });
 });
 
@@ -139,9 +161,10 @@ exports.unlikePost = asyncHandler(async (req, res, next) => {
 
   if (!targetPost) return next(new AppError('This post does not exist', 404));
 
-  targetPost.unlike();
+  const likes = await targetPost.like(req.user._id);
 
   return res.status(200).json({
     status: 'success',
+    likes
   });
 });

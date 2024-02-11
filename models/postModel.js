@@ -71,8 +71,8 @@ const postSchema = new mongoose.Schema({
 
   //? LIKE
   likes: {
-    type: Number,
-    default: 0,
+    type: [mongoose.Schema.ObjectId],
+    ref: 'User'
   },
 
   //? COMMENTS
@@ -100,9 +100,28 @@ const postSchema = new mongoose.Schema({
   },
 });
 
-postSchema.methods.like = function() {
-  this.likes += 1;
+postSchema.methods.like = function(userId) {
+  let res;
+  if(!userId) return;
+  if(this.likes.includes(userId)) {
+    const index = this.likes.indexOf(userId)
+    this.likes.splice(index, 1)
+
+    res = {
+      likes: this.likes.length,
+      liked: false
+    }
+  } else {
+    this.likes.push(userId); 
+
+    res = {
+      likes: this.likes.length,
+      liked: true,
+    }
+  }
+
   this.save();
+  return res;
 }
 
 postSchema.methods.unlike = function() {

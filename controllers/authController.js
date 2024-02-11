@@ -421,7 +421,7 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   if (!authorization)
     return next(
       new AppError(
-        'You are not allowed to access this resource. Please login to your account again.'
+        'Please login to continue.'
       ),
       401
     );
@@ -432,7 +432,7 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   if (!token)
     return next(
       new AppError(
-        'This token is either invalid or has expired. Please login again and provide an access token'
+        'This token is either invalid or has expired. Please login again to continue'
       ),
       401
     );
@@ -446,7 +446,7 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   if (!verifiedPayload)
     return next(
       new AppError(
-        'This token is either invalid or has expired. Please login again and provide an access token'
+        'This token is either invalid or has expired. Please login again to continue'
       ),
       401
     );
@@ -457,7 +457,7 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   if (verifiedPayload.exp < Date.now() / 1000)
     return next(
       new AppError(
-        'This token is either invalid or has expired. Please login again and provide an access token'
+        'This token is either invalid or has expired. Please login again to continue'
       ),
       401
     );
@@ -469,7 +469,7 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   if (!user)
     return next(
       new AppError(
-        'This user does not exist. please login with a valid account to gain access to this resource'
+        'This user does not exist. please login with a valid account to continue'
       ),
       401
     );
