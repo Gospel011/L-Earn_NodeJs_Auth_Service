@@ -116,11 +116,11 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   const postsQuery = Post.find();
 
   const queryProcessor = new QueryProcessor(postsQuery, req.query, [
-    'likes',
+    'text',
     'tags',
   ])
-    .filter()
     .sort()
+    .filter()    
     .select()
     .paginate();
 

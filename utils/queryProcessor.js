@@ -50,14 +50,16 @@ class QueryProcessor {
   }
 
   sort() {
-    let sort = '-averageRating -dateCreated';
+    let sort = '-dateCreated';
+
+    console.log(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::')
 
     //* SORT BY PRICE, DATE CREATED
     if (this.queryObject.sort) {
-      sort = this.queryObject.sort.split(/,\s?/).join(' ');
+      sort = this.queryObject.sort.split(', ').join(' ');
 
-      console.log(`Sort string = ${sort}`);
     }
+    console.log(`Sort string = ${sort}`);
     this.query = this.query.sort(sort);
     return this;
   }

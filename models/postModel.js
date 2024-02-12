@@ -25,7 +25,7 @@ const postSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: function (value) {
-        return value.length > 1;
+        return value.length >= 1;
       },
       message: 'Your post cannot be empty',
     },
@@ -96,7 +96,7 @@ const postSchema = new mongoose.Schema({
   //? DATECREATED
   dateCreated: {
     type: Date,
-    default: Date.now(),
+    default: Date(),
   },
 });
 
