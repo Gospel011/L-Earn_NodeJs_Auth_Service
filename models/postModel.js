@@ -124,11 +124,16 @@ postSchema.methods.like = function(userId) {
   return res;
 }
 
-postSchema.methods.unlike = function() {
-  this.likes -= 1;
-  if(this.likes < 0) return;
-  this.save();
+postSchema.methods.getLikeStatus = function(userId) {
+  
+  this.likes = {
+    likes: this.likes.length,
+    liked: this.likes.includes(userId)
+  }
+
+  // next()
 }
+
 
 postSchema.methods.vote = async function (userId, optionId) {
 

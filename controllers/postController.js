@@ -130,6 +130,14 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   });
 
   //! WORK ON LIKES BEFORE SENDING TO CLIENT
+  
+
+  // posts.likes = {
+  //   likes: posts.likes.length,
+  //   liked: posts.likes.includes(req.user._id)
+  // }
+
+  // console.log(posts.likes)
 
   return res.status(200).json({
     status: 'success',

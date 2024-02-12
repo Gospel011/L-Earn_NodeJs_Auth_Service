@@ -243,12 +243,18 @@ userSchema.pre('save', function(next) {
   console.log('::: inside pre \'save\' hook for generating handle');
 
   if(this.isNew) {
-    this.handle = `@${this.firstName}${this.lastName}${this._id.toString().slice(-6)}`;
+    try {
+      this.handle = `@${this.firstName}${this.lastName}${this._id.toString().slice(-6)}`.toLowerCase();
+    } catch (error) {
+      //? the user would then choose later when he's updating his profile
+    }
     console.log("N E W H A N D L E IS " + this.handle);
   }
 
   next();
 })
+
+
 
 /**
  * This pre save hook hashes the password before saving the document to the database
