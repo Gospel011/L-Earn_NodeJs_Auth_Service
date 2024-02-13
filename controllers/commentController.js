@@ -94,12 +94,16 @@ exports.getAllComments = asyncHandler(async (req, res, next) => {
     return next(new AppError('Please provide a valid type.'));
   }
 
+  console.log({query: req.query})
   commentsQuery = new QueryProcessor(commentsQuery, req.query, [])
     .sort()
     .select()
     .paginate();
 
-  const comments = await commentsQuery.query;
+  const comments = await commentsQuery.query.populate({
+    path: 'userId',
+    select: 'firstName lastName profilePicture handle isVerified gender role',
+  });
 
   res.status(200).json({
     status: 'success',
@@ -138,10 +142,14 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
 
   const { comment } = req.body;
   const userId = req.user._id;
-  const { commentId, contentId, chapterId } = req.params;
+  const { commentId, contentId, chapterId, postId } = req.params;
   const { type } = req.query;
 
   if (!type) return next(new AppError("Please specify the type of content you want to delete this comment for")) //!_
+
+  if(type == 'post' && !postId) return next(new AppError('Please specify the post this comment belongs to'));
+  if(type == 'video' || type == 'book' && !contentId) return next(new AppError('Please specify the content this comment belongs to'));
+  
 
   const newComment = await Comment.findOneAndDelete(
     {
@@ -158,6 +166,7 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
     status: 'success',
   });
 
+
   console.log("type is video", type.toLowerCase() == 'video')
   
   if (type.toLowerCase() == 'video') {
@@ -171,8 +180,11 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
     req.model = Article;
     
   } else if( type.toLowerCase() == 'post') {
-    req.contentQuery = Post.findOne({_id: chapterId, contentId});
-    req.model = Post;
+    
+    const post = await Post.findOne({_id: postId});
+    post.deleteComment(req.user._id);
+
+    
     
   } else {
     return next( new AppError("Invalid type", 400));
@@ -196,14 +208,16 @@ exports.likeComment = asyncHandler(async (req, res, next) => {
   const targetComment = await Comment.findOne({_id: commentId});
   
   if(!targetComment) return next(new AppError("This comment does not exis", 404));
-  targetComment.like();
+  const likes = targetComment.like(req.user._id);
 
   res.status(200).json({
     status: "success",
-    likes: targetComment.likes
+    likes: likes
   })
 
 })
+
+
 
 exports.unlikeComment = asyncHandler(async (req, res, next) => {
 

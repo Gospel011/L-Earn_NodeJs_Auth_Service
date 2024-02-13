@@ -124,6 +124,12 @@ postSchema.methods.like = function(userId) {
   return res;
 }
 
+postSchema.methods.deleteComment = function(userId) {
+  const indexToDelete = this.comments.indexOf(userId);
+  this.comments.splice(indexToDelete, 1);
+  this.save();
+}
+
 postSchema.methods.getLikeStatus = function(userId) {
   
   this.likes = {
