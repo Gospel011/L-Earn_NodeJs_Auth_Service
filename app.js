@@ -22,19 +22,19 @@ app.use(hpp());
 
 // LIMIT REQUESTS BEYOND A CERTAIN THRESHOLD
 
-const limiter = rateLimit({
-  max: 200,
-  windowMs: 1 * 60 * 60 * 1000,
-  message: 'Too many requests. Please try again later',
-});
+// const limiter = rateLimit({
+//   max: 700,
+//   windowMs: 1 * 60 * 60 * 1000,
+//   message: 'Too many requests. Please try again later',
+// });
 
-const tutorialPostLimiter = rateLimit({
-  max: 3,
-  windowMs: 24 * 1 * 60 * 60 * 1000,
-  message: "You've created too many tutorials today, please try again tommorow",
-});
+// const tutorialPostLimiter = rateLimit({
+//   max: 3,
+//   windowMs: 24 * 1 * 60 * 60 * 1000,
+//   message: "You've created too many tutorials today, please try again tommorow",
+// });
 
-app.use('/api', limiter);
+// app.use('/api', limiter);
 // app.use('/api/tutorials', tutorialPostLimiter)
 
 app.get('/', (req, res, next) => {

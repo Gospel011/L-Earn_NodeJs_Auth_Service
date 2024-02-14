@@ -41,6 +41,8 @@ exports.addComment = asyncHandler(async (req, res, next) => {
       if (!targetChapter)
         return next(new AppError('This video no longer exists'));
 
+        console.log("COMMENTS =", req.body)
+
       newComment = await Comment.create({
         userId,
         videoId: chapterId,
@@ -56,11 +58,15 @@ exports.addComment = asyncHandler(async (req, res, next) => {
         return next(new AppError('This post no longer exists'));
       console.log(req.body);
 
+      
+
       newComment = await Comment.create({
         userId,
         postId: postId,
         comment,
       });
+
+      
 
 
       targetPost.comments.push(newComment._id);
@@ -70,9 +76,23 @@ exports.addComment = asyncHandler(async (req, res, next) => {
       return next(new AppError('Please specify a valid type')); //!__
   }
 
+  const userDetails = {
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    profilePicture: req.user.profilePicture,
+    handle: req.user.handle,
+    isVerified: req.user.isVerified,
+    gender: req.user.gender,
+    role: req.user.role,
+    _id: userId
+  }
+
+  newComment = {...newComment}
+  newComment._doc.userId = userDetails
+
   res.status(200).json({
     status: 'success',
-    newComment,
+    newComment: newComment._doc,
   });
 });
 
