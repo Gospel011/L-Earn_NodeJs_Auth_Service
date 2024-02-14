@@ -164,7 +164,7 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
 
   
   const contents = await queryProcessor.query.populate({
-    path: 'userId',
+    path: 'authorId',
     select: 'firstName lastName profilePicture handle isVerified gender role',
   });
 
