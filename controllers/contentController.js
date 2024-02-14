@@ -163,7 +163,10 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
     .paginate();
 
   
-  const contents = await queryProcessor.query;
+  const contents = await queryProcessor.query.populate({
+    path: 'userId',
+    select: 'firstName lastName profilePicture handle isVerified gender role',
+  });
 
   res.status(200).json({
     status: 'success',
