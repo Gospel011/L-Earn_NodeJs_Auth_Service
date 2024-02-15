@@ -131,7 +131,10 @@ exports.getContentById = asyncHandler(async (req, res, next) => {
   console.log('Params: ', req.params);
 
 
-  const content = await Content.findById(id);
+  const content = await Content.findById(id).populate({
+    path: 'authorId',
+    select: 'firstName lastName profilePicture handle isVerified gender role',
+  });
 
   if (!content) {
     console.log("In if block");
