@@ -96,7 +96,7 @@ const postSchema = new mongoose.Schema({
   //? DATECREATED
   dateCreated: {
     type: Date,
-    default: Date(),
+    default: Date,
   },
 });
 

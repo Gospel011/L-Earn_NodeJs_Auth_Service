@@ -48,7 +48,7 @@ const articleSchema = new mongoose.Schema({
         
     dateCreated: {
         type: Date,
-        defualt: Date.now()
+        defualt: Date.now
     }
 
 })
