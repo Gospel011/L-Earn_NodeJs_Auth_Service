@@ -11,11 +11,11 @@ const articleSchema = new mongoose.Schema({
         ref: 'Content',
         required: [true, "A book chapter must belong to a book"]
     },
-    content: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Content',
-        required: [true, "An article must belong to a tutorial"]
-    },
+    // content: {
+    //     type: mongoose.Schema.ObjectId,
+    //     ref: 'Content',
+    //     required: [true, "An article must belong to a tutorial"]
+    // },
     chapter: {
         type: Number,
         required: [true, "please provide the current chapter you want to create"]

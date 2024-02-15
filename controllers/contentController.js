@@ -132,8 +132,8 @@ exports.getContentById = asyncHandler(async (req, res, next) => {
 
 
   const content = await Content.findById(id).populate({
-    path: 'authorId',
-    select: 'firstName lastName profilePicture handle isVerified gender role',
+    path: 'authorId videos articles',
+    select: 'firstName lastName profilePicture handle isVerified gender role title chapter',
   });
 
   if (!content) {
