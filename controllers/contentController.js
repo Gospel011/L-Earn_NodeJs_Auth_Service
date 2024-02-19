@@ -133,7 +133,7 @@ exports.getContentById = asyncHandler(async (req, res, next) => {
 
   const content = await Content.findById(id).populate({
     path: 'authorId videos articles',
-    select: 'firstName lastName followers profilePicture handle isVerified gender role title chapter',
+    // select: 'firstName lastName followers profilePicture handle isVerified gender role title chapter',
   });
 
   if (!content) {
@@ -168,7 +168,7 @@ exports.getAllContent = asyncHandler(async (req, res, next) => {
   
   const contents = await queryProcessor.query.populate({
     path: 'authorId',
-    select: 'firstName lastName followers profilePicture handle isVerified gender role title chapter',
+    // select: 'firstName lastName followers profilePicture handle isVerified gender role title chapter',
   });
 
   res.status(200).json({
