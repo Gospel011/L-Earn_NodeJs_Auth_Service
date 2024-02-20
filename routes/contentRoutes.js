@@ -46,7 +46,7 @@ router
       contentController.getAllContent
     )
 
-    router.route('/info').get(
+    router.route('/info/user-contents').get(
       contentController.getUserContents,
       contentController.getAllContent
     )
