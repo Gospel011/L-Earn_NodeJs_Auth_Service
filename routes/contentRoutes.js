@@ -46,6 +46,11 @@ router
       contentController.getAllContent
     )
 
+    router.route('/info').get(
+      contentController.getUserContents,
+      contentController.getAllContent
+    )
+
     router.route('/info/me/purchases').get(
       contentController.getMyPurchasedContents,
       contentController.getAllContent

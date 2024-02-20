@@ -176,6 +176,8 @@ exports.getChapterById = asyncHandler(async (req, res, next) => {
 
   if (type == 'book') {
     chapterQuery = Article.findOne({ contentId, _id: chapterId });
+
+    
   } else {
     chapterQuery = Video.findOne({ contentId, _id: chapterId });
   }

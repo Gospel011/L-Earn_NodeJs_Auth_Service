@@ -222,6 +222,23 @@ exports.getMyContents = asyncHandler(async (req, res, next) => {
 
   next();
 })
+
+/**
+ * ? GET USER CONTENTS
+ * This route gets all the content having the authorId as the specified authorId in the query, then attaches it
+ * to the request object for the [getAllContents] controller to continue processing
+ */
+exports.getUserContents = asyncHandler(async (req, res, next) => {
+
+  req.userContents = Content.find({authorId: req.query.id})
+
+  console.log("REQ. USER CONTENTS = ${req.userContents)")
+
+
+  next();
+})
+
+
 /**
  * ? GET MY PURCHASED CONTENTS
  * This route gets all the content having the current authorId, then attaches it
