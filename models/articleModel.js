@@ -37,7 +37,7 @@ const articleSchema = new mongoose.Schema({
                 return true;
               }
             },
-            message: 'An article cannot be too short',
+            message: 'An chapter cannot be too short',
           },
     },
     comments: [{
