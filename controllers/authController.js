@@ -532,6 +532,8 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     email,
     gender,
     school,
+    level,
+    department,
     currentPassword,
     newPassword,
     newConfirmPassword,
@@ -567,7 +569,12 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.handle = handle || user.handle;
-    // user.email = email || user.email;
+    user.level = level || user.level;
+    user.department = department || user.department;
+    // if (email) {
+    //   user.email = email;
+    //   user.emailVerified = false;
+    // }
     user.gender = gender || user.gender;
     user.school = school || user.school;
     user.password = newPassword;
@@ -582,6 +589,8 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.handle = handle || user.handle;
+    user.level = level || user.level;
+    user.department = department || user.department;
     // user.email = email || user.email;
     user.gender = gender || user.gender;
     user.school = school || user.school;
