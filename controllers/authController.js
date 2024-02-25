@@ -537,7 +537,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   // TODO -- Refactor this into it's own function
 
-  const user = await User.findOne({ _id: req.user._id }).select('+password');
+  const user = req.user;
 
   let previousPublicId;
   if (user.profilePicture != 'default.png') {
