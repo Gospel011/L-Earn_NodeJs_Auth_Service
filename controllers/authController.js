@@ -3,7 +3,7 @@ const AppError = require('../utils/appError');
 const asyncHandler = require('../utils/asyncHandler');
 const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
-const QueryProcessor = require('../utils/queryProcessor')
+const QueryProcessor = require('../utils/queryProcessor');
 
 //! const bcrypt = require('bcryptjs');
 const sendEmailDev = require('../utils/sendEmail');
@@ -419,12 +419,7 @@ exports.isLoggedIn = asyncHandler(async (req, res, next) => {
   // Confirm that the headers has an authorization field
   const { authorization } = req.headers;
   if (!authorization)
-    return next(
-      new AppError(
-        'Please login to continue.'
-      ),
-      401
-    );
+    return next(new AppError('Please login to continue.'), 401);
 
   //* Extract the access token from the authorization field
   const token = authorization.split(' ')[1];
@@ -537,7 +532,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     currentPassword,
     newPassword,
     newConfirmPassword,
-    handle
+    handle,
   } = req.body;
 
   // TODO -- Refactor this into it's own function
@@ -580,8 +575,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     user.password = newPassword;
     user.confirmPassword = newConfirmPassword;
 
-    if (req.file)
-      user.profilePicture = req.file.filename || user.profilePicture;
+    
 
     await user.save();
   } else {
@@ -595,8 +589,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     user.gender = gender || user.gender;
     user.school = school || user.school;
 
-    if (req.file)
-      user.profilePicture = req.file.filename || user.profilePicture;
+    
 
     await user.save();
   }
@@ -608,28 +601,48 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.updatePictures = asyncHandler(async (req, res, next) => {
+  console.log(
+    'F I L E S   O B J E C T   F R O M   M I D D L E W A R E   S T A C K  ',
+    req.files
+  );
+
+  const user = await User.findById(req.user._id).select('+password');
+  
+  Object.keys(req.files).forEach(key => {
+    const file = req.files[key][0];
+    
+    user[key] = file.filename
+    
+  });
+
+  console.log("U S E R   IS  ", user);
+
+  req.user = user;
+  next()
+});
+
 exports.isEmailVerified = (req, res, next) => {
   console.log(`Is email verified = ${req.user.emailVerified}`);
   if (req.user.emailVerified) {
-    console.log("Your email is verified");
+    console.log('Your email is verified');
     next();
   } else {
-    return next(
-      new AppError('Please verify your email to continue', 401)
-    );
+    return next(new AppError('Please verify your email to continue', 401));
   }
-}
+};
 
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  if (!id)
+    return next(new AppError('Please select a valid user id to continue'));
+  const user = await new QueryProcessor(User.findById(id), req.query).select()
+    .query;
 
-exports.getUser = asyncHandler(async(req, res, next) => {
-  const { id } = req.params
-  if(!id) return next(new AppError("Please select a valid user id to continue"));
-  const user = await new QueryProcessor(User.findById(id), req.query).select().query;
-
-  if (!user) return next(new AppError("The required user does not exist", 404));
+  if (!user) return next(new AppError('The required user does not exist', 404));
 
   res.status(200).json({
-    status: "success",
-    user
-  })
-})
+    status: 'success',
+    user,
+  });
+});

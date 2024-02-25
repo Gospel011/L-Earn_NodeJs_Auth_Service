@@ -45,12 +45,25 @@ router.post(
 );
 
 // Update profile
+// router.patch(
+//   '/update-profile',
+//   authController.isLoggedIn,
+//   multerHandler.getProfilePicture,
+//   multerHandler.processAndUploadImageToCloud('profilePicture'),
+//   authController.updateProfile
+// );
+
+// Update profile
 router.patch(
   '/update-profile',
   authController.isLoggedIn,
-  multerHandler.getProfilePicture,
-  multerHandler.processAndUploadImageToCloud('profilePicture'),
-  authController.updateProfile
+  multerHandler.upload.fields([
+    {name: "profilePicture", maxCount: 1},
+    {name: "banner", maxCount: 1}
+  ]),
+  multerHandler.processAndUploadMultipleImagesToCloud,
+  authController.updatePictures,
+  authController.updateProfile,
 );
 
 module.exports = router;

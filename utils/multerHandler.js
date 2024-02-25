@@ -40,9 +40,18 @@ const uploadDocs = multer({
   fileFilterDocs,
   limits: {
     files: 1,
-    fileSize: 1000 * 1024 * 1024,
+    fileSize: 10 * 1024 * 1024,
     fields: 10,
-    //parts: 7,
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilterDocs,
+  limits: {
+    files: 2,
+    fileSize: 10 * 1024 * 1024,
+    fields: 10,
   },
 });
 
@@ -54,7 +63,6 @@ const uploadVideo = multer({
     files: 1,
     fileSize: 300 * 1024 * 1024,
     fields: 10,
-    //parts: 7,
   },
 });
 
@@ -63,8 +71,8 @@ const getThumbnail = uploadDocs.single('thumbnail'); //? FOR TUTORIAL THUMBNAIL
 const getImage = uploadDocs.single('image'); //? FOR POST
 const getVideo = uploadVideo.single('video'); //? FOR POST
 
-const uploadImageFromBuffer = asyncHandler(async (req, cb) => {
-  const public_id = `user-${req.user._id.toString().slice(-6)}-${Math.round(
+const uploadImageFromBuffer = async (req, cb, buffer) => {
+  const public_id = `${req.user._id}/user-${req.user._id.toString().slice(-6)}-${Math.round(
     Math.random() * 1e9
   )}-${Date.now()}`;
   cloudinary.uploader
@@ -77,10 +85,10 @@ const uploadImageFromBuffer = asyncHandler(async (req, cb) => {
         cb(error, result);
       }
     )
-    .end(req.file.buffer);
-});
+    .end(buffer || req.file.buffer);
+};
 
-const uploadVideoFromBuffer = asyncHandler(async (req, cb) => {
+const uploadVideoFromBuffer = async (req, cb) => {
   const public_id = `user-${req.user._id.toString().slice(-6)}-${Math.round(
     Math.random() * 1e9
   )}-${Date.now()}`;
@@ -95,7 +103,41 @@ const uploadVideoFromBuffer = asyncHandler(async (req, cb) => {
       }
     )
     .end(req.file.buffer);
+};
+
+const processAndUploadMultipleImagesToCloud = asyncHandler(async (req, res, next) => {
+  console.log("LATERS");
+  console.log(":::; F I L E S   I S  ", req.files);
+
+  var keys = Object.keys(req.files);
+
+  console.log(`::: K E Y S ${keys} :::`);
+
+  const results = keys.map(async (key) => { // Use async keyword here
+    const currentFileObject = req.files[key][0];
+    sharp(currentFileObject.buffer).jpeg({ quality: 100 }).toFormat('jpeg');
+
+    // Wrap the uploadImageFromBuffer function in a promise
+    return new Promise((resolve, reject) => {
+      uploadImageFromBuffer(req, (error, result) => {
+        if (error) {
+          console.error(error);
+          reject(new AppError('Failed to upload image'));
+        } else {
+          console.log(result);
+          // console.log('SECURE URL FROM UPLOAD STREAM', result.secure_url);
+          currentFileObject.filename = result.secure_url;
+          resolve(); // Resolve the promise
+        }
+      }, currentFileObject.buffer);
+    });
+  });
+
+  await Promise.all(results);
+
+  next();
 });
+
 
 const processAndUploadImageToCloud = (type) => {
 
@@ -109,26 +151,26 @@ const processAndUploadImageToCloud = (type) => {
 
     if (type === 'profilePicture') {
       console.log("Processed image for 'profile picture'");
-      await sharp(req.file.buffer)
+      sharp(req.file.buffer)
         .resize(500, 500)
         .jpeg({ quality: 100 })
         .toFormat('jpeg');
     } else if (type === 'thumbnail') {
       console.log("Processed image for 'thumbnail'");
-      await sharp(req.file.buffer)
+      sharp(req.file.buffer)
         .resize(1920, 1080)
         .jpeg({ quality: 100 })
         .toFormat('jpeg');
     } else if (type === 'image') {
       console.log("Processed image for 'post'");
-      await sharp(req.file.buffer).jpeg({ quality: 100 }).toFormat('jpeg');
+      sharp(req.file.buffer).jpeg({ quality: 100 }).toFormat('jpeg');
     }
 
     console.log('CLOUDINARY UPLOAD FILE', req.file);
 
     //* HANDOLE VIDEO UPLOAD TO CLOUDINARY
     if (type == "video") {
-      uploadVideoFromBuffer(req, (error, result) => {
+      await uploadVideoFromBuffer(req, (error, result) => {
         console.log("Uploading from buffer");
         if (error) {
           console.error(error);
@@ -143,7 +185,7 @@ const processAndUploadImageToCloud = (type) => {
 
       //* HANDOLE IMAGE UPLOAD TO CLOUDINARY
     } else {
-      uploadImageFromBuffer(req, (error, result) => {
+      await uploadImageFromBuffer(req, (error, result) => {
         if (error) {
           console.error(error);
           return next(new AppError('Failed to upload image'));
@@ -161,6 +203,8 @@ const processAndUploadImageToCloud = (type) => {
 module.exports = {
   getProfilePicture,
   processAndUploadImageToCloud,
+  processAndUploadMultipleImagesToCloud,
+  upload,
   getThumbnail,
   getImage,
   getVideo,
