@@ -44,9 +44,9 @@ const contentSchema = new mongoose.Schema({
     default: 0,
     validate: {
       validator: function(value) {
-        return value <= 3000;
+        return value <= 5000;
       },
-      message: "You may only set a price of \u20A62,000 max"
+      message: "You may only set a price of \u20A65,000 max"
     }
   },
   videos: [{
