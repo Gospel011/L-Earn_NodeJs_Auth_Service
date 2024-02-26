@@ -125,8 +125,7 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
     .paginate();
 
   const posts = await queryProcessor.query.populate({
-    path: 'userId',
-    select: 'firstName lastName profilePicture handle isVerified gender role',
+    path: 'userId'
   });
 
   //! WORK ON LIKES BEFORE SENDING TO CLIENT
