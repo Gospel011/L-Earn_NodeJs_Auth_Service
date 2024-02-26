@@ -41,7 +41,7 @@ const uploadDocs = multer({
   limits: {
     files: 1,
     fileSize: 10 * 1024 * 1024,
-    fields: 10,
+    fields: 13,
   },
 });
 
@@ -51,7 +51,7 @@ const upload = multer({
   limits: {
     files: 2,
     fileSize: 10 * 1024 * 1024,
-    fields: 10,
+    fields: 13,
   },
 });
 
@@ -62,7 +62,7 @@ const uploadVideo = multer({
   limits: {
     files: 1,
     fileSize: 300 * 1024 * 1024,
-    fields: 10,
+    fields: 13,
   },
 });
 

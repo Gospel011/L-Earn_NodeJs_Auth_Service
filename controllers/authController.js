@@ -636,8 +636,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   if (!id)
     return next(new AppError('Please select a valid user id to continue'));
-  const user = await new QueryProcessor(User.findById(id), req.query).select()
-    .query;
+  const user = await User.findById(id);
 
   if (!user) return next(new AppError('The required user does not exist', 404));
 
