@@ -116,12 +116,12 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: function (value) {
         if (this.isNew || this.isModified('password')) {
-          return value.length === 8;
+          return value.length >= 8 && value.length <= 16;
         } else {
           return true;
         }
       },
-      message: 'your password should be 8 characters long}',
+      message: 'your password should be 8 to 16 characters long}',
     },
   },
 

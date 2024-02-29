@@ -33,8 +33,8 @@ module.exports = (err, req, res, next) => {
         message: keyValues[0] == "handle" ? "This handle has already been chosen" : 'You already have an account. Please login with your email and password.'
       });
       
-  } else if (err.statusCode == 503) {
-    res.status(err.statusCode).json({
+  } else if (err.message.includes('503')) {
+    res.status(503).json({
       status: 'fail',
       message: 'Your request couldn\'t be completed, please try again after a few minutes'
     })

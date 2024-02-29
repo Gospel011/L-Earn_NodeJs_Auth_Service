@@ -5,6 +5,7 @@ const CourseInvoice = require('../models/courseInvoiceModel');
 const User = require('../models/userModel');
 const { generateReference } = require('../utils/mnfy');
 const AppError = require('../utils/appError');
+const QueryProcessor = require('../utils/queryProcessor');
 const axios = require('axios');
 
 exports.initializeInvoice = asyncHandler(async (req, res, next) => {
@@ -46,11 +47,15 @@ exports.initializeInvoice = asyncHandler(async (req, res, next) => {
 
   //? MAKE POST REQUEST
   const response = await axios.post(invoiceUrl, invoiceDetails, { headers });
+  const invoice = response.data.responseBody;
 
   const courseInvoice = await CourseInvoice.create({
     userId,
     authorId: targetContent.authorId,
     contentId,
+    bankName: invoice.bankName,
+    accountNumber: invoice.accountNumber,
+    accountName: invoice.accountName,
     paymentDescription: invoiceDetails.description,
     amountPayable: `${price}`,
     currency: invoiceDetails.currencyCode,
@@ -181,4 +186,24 @@ exports.confirmPayment = asyncHandler(async (req, res, next) => {
   console.log(':::: HAS PAID :::');
   //? Allow access
   next();
+});
+
+exports.getTransactionHistory = asyncHandler(async (req, res, next) => {
+  const transactionHistoryQuery = CourseInvoice.find({ userId: req.user._id });
+  const queryProcessor = new QueryProcessor(transactionHistoryQuery, req.query, [
+    'paymentStatus',
+    'dateCreated',
+  ])
+    .filter()
+    .sort()
+    .select()
+    .paginate();
+
+    const transactionHistory = await queryProcessor.query.populate({path: 'userId contentId', select: 'firstName lastName title thumbnailUrl'});
+
+    res.status(200).json({
+      status: 'success',
+      results: transactionHistory.length,
+      transactionHistory
+    });
 });
