@@ -62,9 +62,13 @@ exports.initializeInvoice = asyncHandler(async (req, res, next) => {
     invoiceRef: invoiceReference,
   });
 
+  const finalInvoice = {...response.data.responseBody};
+
+  finalInvoice.dateCreated = courseInvoice.dateCreated;
+
   res.status(200).json({
     status: 'success',
-    response: response.data.responseBody,
+    response: finalInvoice,
   });
 });
 
@@ -180,7 +184,7 @@ exports.confirmPayment = asyncHandler(async (req, res, next) => {
 
   if (!courseInvoice) {
     console.log(':::: HAS NOT PAID :::');
-    return next(new AppError('Please complete checkout to continue', 402));
+    return next(new AppError('Please complete purchase to continue', 402));
   }
 
   console.log(':::: HAS PAID :::');
@@ -190,16 +194,18 @@ exports.confirmPayment = asyncHandler(async (req, res, next) => {
 
 exports.getTransactionHistory = asyncHandler(async (req, res, next) => {
   const transactionHistoryQuery = CourseInvoice.find({ userId: req.user._id });
+
   const queryProcessor = new QueryProcessor(transactionHistoryQuery, req.query, [
     'paymentStatus',
     'dateCreated',
+    'invoiceRef'
   ])
     .filter()
     .sort()
     .select()
     .paginate();
 
-    const transactionHistory = await queryProcessor.query.populate({path: 'userId contentId', select: 'firstName lastName title thumbnailUrl'});
+    const transactionHistory = await queryProcessor.query.populate({path: 'userId contentId', select: 'firstName lastName title thumbnailUrl email'});
 
     res.status(200).json({
       status: 'success',

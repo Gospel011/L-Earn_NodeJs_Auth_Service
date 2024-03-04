@@ -35,6 +35,7 @@ exports.registerPayment = asyncHandler(async (req, res, next) => {
   const contentId = targetInvoice.contentId;
   const content = await Content.findById(contentId);
   content.students.push(targetInvoice.userId);
+  content.save();
   
 
   

@@ -22,14 +22,17 @@ const courseInvoiceSchema = new mongoose.Schema({
     },
     bankName: {
         type: String,
-	required: [true, 'An invoice must have a bank name for user to transfer']
+        default: '',
+        required: [true, 'An invoice must have a bank name for user to transfer']
     },
     accountNumber: {
         type: String,
-	required: [true, 'An invoice must have an account number for user to transfer']
+        default: '',
+        required: [true, 'An invoice must have an account number for user to transfer']
     },
     accountName: {
         type: String,
+        default: '',
 	required: [true, 'An invoice must have an account name for user to transfer']
     },
     amountPayable: {
