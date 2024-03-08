@@ -1,8 +1,10 @@
 const express = require('express');
 const authController = require('./../controllers/authController');
+const followRoute = require('./followRoutes');
 const multerHandler = require('./../utils/multerHandler');
 
 const router = express.Router();
+router.use('/:id/actions', followRoute)
 
 console.log('in user routes');
 
