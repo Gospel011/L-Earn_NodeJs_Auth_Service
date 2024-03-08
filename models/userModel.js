@@ -260,7 +260,8 @@ userSchema.pre('save', function(next) {
 
   if(this.isNew) {
     try {
-      this.handle = `@${this.firstName}${this.lastName}${this._id.toString().slice(-6)}`.toLowerCase();
+      const name = `${this.firstName}${this.lastName}`.slice(-6);
+      this.handle = `@${name}${this._id.toString().slice(-6)}`.toLowerCase();
     } catch (error) {
       //? the user would then choose later when he's updating his profile
     }
