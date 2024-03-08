@@ -58,3 +58,28 @@ exports.followUser = asyncHandler(async (req, res, next) => {
 
 })
 
+exports.getFollowStatus = asyncHandler(async (req, res, next) => {
+    const { id } = req.params; // id of user to follow
+
+    if (!id) return next(new AppError("This user does not exist", 400));
+
+    const follow = await Follow.findOne({ // create the user
+        userId: req.user._id,
+        userToFollow: id
+    });
+
+    console.log("F O L L O W  ", follow);
+
+    if (follow) {
+        res.status(200).json({
+            status: "success",
+            message: "followed"
+        })
+    } else {
+        res.status(200).json({
+            status: "success",
+            message: "unfollowed"
+        })
+    }
+})
+
