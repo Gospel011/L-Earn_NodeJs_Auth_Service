@@ -93,6 +93,16 @@ const userSchema = new mongoose.Schema({
   },
 
   /**
+     * ## FOLLOWING
+     * @param {Boolean} following This is a tag that shows the number of followers a user is following
+     */
+    //! New
+  following: {
+    type: Number,
+    default: 0,
+  },
+
+  /**
      * ## PROFILE PICTURE
      * @param {String} profilePicture this is the user's profile picture
      */

@@ -28,6 +28,8 @@ exports.followUser = asyncHandler(async (req, res, next) => {
 
     if (hasFollowed) { // unfollow user if he has already been followed by the current user
     userToFollow.followers -= 1;
+    req.user.following -= 1;
+    req.user.save();
     userToFollow.save();
     res.status(200).json({
         status: "success",
@@ -44,7 +46,10 @@ exports.followUser = asyncHandler(async (req, res, next) => {
     });
 
     userToFollow.followers += 1; // update the user to follow follower count
+    req.user.following += 1;
+    req.user.save();
     userToFollow.save(); // save the update
+
 
     res.status(200).json({ // send a successful response back to the client
         status: "success",
