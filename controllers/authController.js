@@ -645,3 +645,21 @@ exports.getUser = asyncHandler(async (req, res, next) => {
     user,
   });
 });
+
+
+exports.registerFcmToken = asyncHandler(async (req, res, next) => {
+  const { token } = req.body;
+
+  if (!token) return next(new AppError("Please provide your device token"));
+
+  const user = await User.findById(req.user._id).select("+fcmToken");
+  user.fcmToken = token;
+  user.save();
+
+
+  res.status(200).json({
+    status: "success",
+    message: "Fcm token registered successfully"
+  });
+
+})

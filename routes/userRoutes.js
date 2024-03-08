@@ -13,6 +13,9 @@ router.get('/:id', authController.isLoggedIn, authController.getUser)
 //* SIGNUP ROUTE
 router.put('/signup', authController.signUp);
 
+//* REGISTER FCM TOKEN
+router.post('/registerFcmToken', authController.isLoggedIn, authController.registerFcmToken);
+
 //* LOGIN ROUTE
 router.post('/login', authController.login);
 

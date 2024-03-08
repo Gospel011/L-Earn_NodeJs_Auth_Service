@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema({
     }
   },
 
+  fcmToken: {
+    type: String,
+    select: false
+  },
+
   /**
      * ## LAST NAME
      * @param {String} lastName This is the user's last name
