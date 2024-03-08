@@ -100,7 +100,7 @@ exports.getCoursePaymentsStatistics = asyncHandler(async (req, res, next) => {
       $group: {
         _id: '$contentId',
         sales: { $sum: 1 }, //? total sales for a particular course
-        profit: { $sum: { $multiply: ['$amountPaid', 0.55] } }, //? toal profit payable made from the course
+        profit: { $sum: { $multiply: ['$amountPaid', 0.60] } }, //? toal profit payable made from the course
       },
     },
     {
