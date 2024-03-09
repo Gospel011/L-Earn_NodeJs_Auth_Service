@@ -9,6 +9,10 @@ const QueryProcessor = require('../utils/queryProcessor');
 const axios = require('axios');
 
 exports.initializeInvoice = asyncHandler(async (req, res, next) => {
+
+//! REMOVE ONCE VERIFICATION IS DONE
+return next(new AppError("This feature is awaiting verification by payment provider. We would update you once it's live."));
+
   const { contentId } = req.params;
   const userId = req.user._id;
   if (!contentId || contentId == ':contentId')
