@@ -37,7 +37,7 @@ app.use(hpp());
 // app.use('/api', limiter);
 // app.use('/api/tutorials', tutorialPostLimiter)
 
-app.get('/', (req, res, next) => {
+app.get('/emman222/server/test', (req, res, next) => {
   res.status(200).json({
     status: 'success',
     message: 'L-Earn is successfully running on server with keepAlive on',
@@ -62,6 +62,7 @@ const baseUrl = `/api/${apiVersion}`;
 
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(express.static('./public'));
 
 //* ROUTES
 app.use(`/api/${apiVersion}/user`, userRoutes);
