@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const app = express();
 
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
@@ -36,6 +37,15 @@ app.use(hpp());
 
 // app.use('/api', limiter);
 // app.use('/api/tutorials', tutorialPostLimiter)
+
+app.use(compression({
+  level: 6,
+  threshold: 100
+}));
+
+app.get('/', (req, res, next) => {
+  res.send("this is a response".repeat(100))
+});
 
 app.get('/emman222/server/test', (req, res, next) => {
   res.status(200).json({
