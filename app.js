@@ -71,6 +71,11 @@ app.use(`/api/${apiVersion}/posts`, postRoutes);
 app.use(`/webhooks/${apiVersion}/mnfy-webhook`, webhookRoutes);
 app.use(`/api/${apiVersion}/payment`, paymentRoutes);
 
+app.get('/', (req, res, next) => {
+  console.log('Here');
+  res.redirect("https://drive.google.com/drive/folders/1HJ9oeOu6U0zjoKmJdmSxFvTNEK6PtNyD");
+});
+
 // GLOBAL ERROR HANDLER
 app.use(globalErrorHandler);
 

@@ -18,7 +18,7 @@ const keepAlive = ()=> {
 
   setTimeout(()=> {
     console.log("inside set timeout");
-    axios.get('https://l-earn.onrender.com').then(result => console.log(result.data)).catch(err => {
+    axios.get('https://l-earn.onrender.com/emman222/server/test').then(result => console.log(result.data)).catch(err => {
       console.log('network error')
     })
     keepAlive();
