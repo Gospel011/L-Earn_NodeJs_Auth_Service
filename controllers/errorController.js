@@ -38,10 +38,19 @@ module.exports = (err, req, res, next) => {
       status: 'fail',
       message: 'Your request couldn\'t be completed, please try again after a few minutes'
     })
+  } else if (err.name == 'CastError') {
+    const model = err.message.split('model')[1]
+    res.status(err.statusCode || 500).json({
+      status: 'fail',
+      err,
+      message: `Invalid ${model.toLowerCase()} id`,
+    });
+
   }
   else {
     res.status(err.statusCode || 500).json({
         status: 'fail',
+        err,
         message: 'Something went wrong. Please contact us with a description of what you were doing before you saw this message.',
       });
   }
