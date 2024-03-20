@@ -43,10 +43,6 @@ app.use(compression({
   threshold: 100
 }));
 
-app.get('/', (req, res, next) => {
-  res.send("this is a response".repeat(100))
-});
-
 app.get('/emman222/server/test', (req, res, next) => {
   res.status(200).json({
     status: 'success',
