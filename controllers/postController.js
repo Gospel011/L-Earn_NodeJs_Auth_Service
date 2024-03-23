@@ -122,7 +122,7 @@ exports.getPostById = asyncHandler(async (req, res, next) => {
   
   console.log(`Target post id ${postId}`)
 
-  const targetPost = await Post.findById(postId);
+  const targetPost = await Post.findById(postId).populate({path: 'userId'});
 
   if (!targetPost) return next(new AppError("The requested post does not exist", 404));
 
