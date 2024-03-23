@@ -112,6 +112,27 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getPostById = asyncHandler(async (req, res, next) => {
+  const { postId } = req.params;
+
+  console.log("Query is %q", req.params);
+
+  
+  if(!postId) return next(new AppError("The requested post does not exist", 404));
+  
+  console.log(`Target post id ${postId}`)
+
+  const targetPost = await Post.findById(postId);
+
+  if (!targetPost) return next(new AppError("The requested post does not exist", 404));
+
+  res.status(200).json({
+    status: "success",
+    post: targetPost
+  })
+
+})
+
 exports.getPosts = asyncHandler(async (req, res, next) => {
   const postsQuery = Post.find();
 

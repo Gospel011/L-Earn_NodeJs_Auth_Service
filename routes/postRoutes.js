@@ -8,6 +8,7 @@ const router = express.Router()
 
 
 router.use('*', authController.isLoggedIn, authController.isEmailVerified)
+
 router.use('/:postId/comments', commentRoutes)
 
 
@@ -15,6 +16,9 @@ router.route('/').put( multer.getImage, multer.processAndUploadImageToCloud('ima
 
 router.route('/:pollId/vote/:optionId').post(postController.vote)
 
+
+
+router.route('/:postId').get(postController.getPostById)
 router.route('/:postId').delete(postController.deletePost);
 router.route('/:postId/like').post(postController.likePost);
 router.route('/:postId/unlike').post(postController.unlikePost);

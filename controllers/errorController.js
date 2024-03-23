@@ -42,7 +42,6 @@ module.exports = (err, req, res, next) => {
     const model = err.message.split('model')[1]
     res.status(err.statusCode || 500).json({
       status: 'fail',
-      err,
       message: `Invalid ${model.toLowerCase()} id`,
     });
 
@@ -50,7 +49,6 @@ module.exports = (err, req, res, next) => {
   else {
     res.status(err.statusCode || 500).json({
         status: 'fail',
-        err,
         message: 'Something went wrong. Please contact us with a description of what you were doing before you saw this message.',
       });
   }
